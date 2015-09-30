@@ -37,8 +37,8 @@ RequestExecutionLevel admin
 ;Define UI settings
 
 ;!define MUI_UI_HEADERIMAGE_RIGHT "../../src/app/images/icon.png"
-!define MUI_ICON "icon.ico"
-!define MUI_UNICON "icon.ico"
+!define MUI_ICON "systray.ico"
+!define MUI_UNICON "systray.ico"
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP "OpenBazaar_Windows_Installer.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "OpenBazaar_Windows_Installer.bmp"
@@ -308,7 +308,10 @@ Section ; App Files
     File /r "../OpenBazaar-Server"
     File /r "OpenBazaar.ps1"
     File /r "icon.ico"
+    File /r "systray.ico"
     File /r "install.ps1"
+    File /r "systray.py"
+    ;File /r "observice.py"
 
 SectionEnd
 
@@ -321,19 +324,24 @@ Section ; pyNaCl Install
 SectionEnd
 
 Section ; Set up Windows Service
-    FileOpen $9 "$INSTDIR\start_openbazaar.bat" w
-    FileWrite $9 "$INSTDIR\Python27\python.exe $INSTDIR\OpenBazaar-Server\openbazaard.py start"
-    FileClose $9
+    ;FileOpen $9 "$INSTDIR\start_openbazaar.bat" w
+    ;FileWrite $9 "$INSTDIR\Python27\python.exe $INSTDIR\OpenBazaar-Server\openbazaard.py start"
+    ;FileClose $9
     ;File /r "start_openbazaar.bat"
 
-    SimpleSC::InstallService "OpenBazaar4" "OpenBazaar Server Daemon4" "16" "2" "$INSTDIR\start_openbazaar.bat" "" "" ""
-    Pop $0 ; returns an errorcode (<>0) otherwise success (0)
-        IntCmp $0 0 Done +1 +1
-        Push $0
-        SimpleSC::GetErrorMessage
-        Pop $0
-        MessageBox MB_OK|MB_ICONSTOP "Stopping fails - Reason: $0"
-      Done:
+    ;SimpleSC::InstallService "OpenBazaar4" "OpenBazaar Server Daemon4" "16" "2" "$INSTDIR\start_openbazaar.bat" "" "" ""
+    ;Pop $0 ; returns an errorcode (<>0) otherwise success (0)
+    ;    IntCmp $0 0 Done +1 +1
+    ;    Push $0
+    ;    SimpleSC::GetErrorMessage
+    ;    Pop $0
+    ;    MessageBox MB_OK|MB_ICONSTOP "Stopping fails - Reason: $0"
+    ;  Done:
+
+    ;'nsExec::ExecToStack `$INSTDIR\Python27\python.exe $INSTDIR\observice.py install`
+    ;Pop $0
+    ;MessageBox MB_OK|MB_ICONSTOP "Result: $0"
+
 SectionEnd
 
 ; ------------------- ;
@@ -358,5 +366,5 @@ SectionEnd
 ;  Desktop Shortcut  ;
 ; ------------------ ;
 Function finishpageaction
-    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "Powershell.exe" "-ExecutionPolicy ByPass -File OpenBazaar.ps1" "$INSTDIR\icon.ico" "" "" "" "${APP_NAME} ${PT_VERSION}"
+    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "Powershell.exe" "-ExecutionPolicy ByPass -File OpenBazaar.ps1" "$INSTDIR\systray.ico" "" "" "" "${APP_NAME} ${PT_VERSION}"
 FunctionEnd
