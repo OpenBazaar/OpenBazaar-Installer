@@ -232,12 +232,13 @@ if __name__ == '__main__':
     import itertools
     import glob
 
-    icons = itertools.cycle(glob.glob('*.ico'))
+    icon = 'systray.ico'
     hover_text = "SysTrayIcon.py Demo"
 
 
     def open_client(sysTrayIcon):
         subprocess.Popen(['Powershell', "-ExecutionPolicy ByPass", '-File OpenBazaar.ps1'])
+
 
     def start_server(sysTrayIcon):
         subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'start'])
@@ -248,17 +249,17 @@ if __name__ == '__main__':
 
 
     def switch_icon(sysTrayIcon):
-        sysTrayIcon.icon = icons.next()
+        sysTrayIcon.icon = icon
         sysTrayIcon.refresh_icon()
 
 
     menu_options = (
-        ('OpenBazaar', icons.next(), open_client)
-        ('Start OpenBazaar Server', icons.next(), start_server),
+        ('OpenBazaar', None, open_client),
+        ('Start OpenBazaar Server', None, start_server),
         ('Stop OpenBazaar Server', None, stop_server)
     )
 
     def bye(sysTrayIcon):
         print 'Close System Tray Icon'
 
-    SysTrayIcon(icons.next(), hover_text, menu_options, on_quit=bye, default_menu_index=1)
+    SysTrayIcon(icon, hover_text, menu_options, on_quit=bye, default_menu_index=1)
