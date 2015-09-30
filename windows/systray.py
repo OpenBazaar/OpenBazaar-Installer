@@ -226,18 +226,14 @@ def non_string_iterable(obj):
         return not isinstance(obj, basestring)
 
 
-# Minimal self test. You'll need a bunch of ICO files in the current working
-# directory in order for this to work...
 if __name__ == '__main__':
-    import itertools
-    import glob
 
     icon = 'systray.ico'
-    hover_text = "SysTrayIcon.py Demo"
+    hover_text = "OpenBazaar"
 
 
     def open_client(sysTrayIcon):
-        subprocess.Popen(['Powershell', "-ExecutionPolicy ByPass", '-File OpenBazaar.ps1'])
+        subprocess.Popen(['Powershell', '-ExecutionPolicy', 'ByPass', '-File', 'OpenBazaar.ps1'])
 
 
     def start_server(sysTrayIcon):
