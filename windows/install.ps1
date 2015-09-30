@@ -83,9 +83,11 @@ If (-Not(Test-Path -Path "$fullDirName\node.msi")){
   if ($os_type -eq "True") {
     $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v4.1.1-x64.msi", "$fullDirName\node.msi")
     $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip", "$fullDirName\electron.zip")
+    $wc.DownloadFile("http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download", "$fullDirName\pywin32.exe")
   } else {
     $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v4.1.1-x86.msi", "$fullDirName\node.msi")
     $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-ia32.zip", "$fullDirName\electron.zip")
+    $wc.DownloadFile("http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download", "$fullDirName\pywin32.exe")
   }
 }
 
@@ -107,6 +109,8 @@ Write-Host "Installing VC Redist..."
 Start-Process "$fullDirName\vcredist.exe" -ArgumentList "/passive" -Wait
 Write-Host "Installing VC for Python..."
 Start-Process "$fullDirName\VCForPython27.msi" /qn -Wait
+Write-Host "Installing pywin32..."
+Start-Process "$fullDirName\pywin32.exe" -ArgumentList "/passive" -Wait
 
 # Add python and scripts folder to PATH
 Write-Host "Setting PATH Vars..."
@@ -148,6 +152,7 @@ if ($os_type -eq "True") {
 }
 
 Start-Process "pip" -ArgumentList "install cffi" -NoNewWindow -Wait
+#Start-Process "pip" -ArgumentList "install pywin32" -NoNewWindow -Wait
 
 Set-Location "$env:localappdata\$tempDir\OpenBazaar-Server"
 Start-Process "pip" -ArgumentList "install -r requirements.txt" -NoNewWindow -Wait
