@@ -13,6 +13,8 @@
 ## ./make_openbazaar.sh '-b release/0.3.4 https://github.com/OpenBazaar/OpenBazaar.git'
 ##
 
+OS="${1}"
+
 # Check if user specified repository to pull code from
 clone_repo="True"
 clone_url_server="https://github.com/OpenBazaar/OpenBazaar-Server.git"
@@ -222,7 +224,77 @@ if [ "${rd_dep}" = "yes" ]; then
     echo "Successfully setup for OpenBazaar"
 fi
 
-makensis windows/ob.nsi
+# Check for temp folder and create if does not exist
+mkdir -p temp
+
+# Download OS specific installer files to package
+case $OS in win32*)
+        export OB_OS=win32
+        
+        cd temp/
+
+        if [ ! -f python-2.7.10.msi ]; then
+            wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.msi -O python-2.7.10.msi
+        fi
+        if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x86.msi -O node.msi
+        fi
+        if [ ! -f electron.zip ]; then
+            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-ia32.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
+        fi
+        if [ ! -f pywin32.exe ]; then
+            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download -O pywin32.exe
+        fi
+        if [ ! -f vcredist.exe ]; then
+            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
+        fi
+
+        wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.3-msvc.zip -O libsodium.zip && unzip libsodium.zip -d libsodium && rm libsodium.zip
+        wget http://msinttypes.googlecode.com/svn/trunk/inttypes.h -O inttypes.h
+        wget http://msinttypes.googlecode.com/svn/trunk/stdint.h -O stdint.h
+        wget https://github.com/pyca/pynacl/archive/v0.3.0.zip -O pynacl.zip && unzip pynacl.zip  -d pynacl && rm pynacl.zip
+        wget https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi -O VCForPython27.msi
+
+        cd ..
+
+        makensis windows/ob.nsi
+        ;;
+    win64*)
+        export OB_OS=win64
+        
+        cd temp/
+
+        if [ ! -f python-2.7.10.msi ]; then
+            wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi -O python-2.7.10.msi
+        fi
+        if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
+        fi
+        if [ ! -f electron.zip ]; then
+            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
+        fi
+        if [ ! -f pywin32.exe ]; then
+            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download -O pywin32.exe
+        fi
+        if [ ! -f vcredist.exe ]; then
+            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe -O vcredist.exe
+        fi
+        
+        wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.3-msvc.zip -O libsodium.zip && unzip libsodium.zip -d libsodium && rm libsodium.zip
+        wget http://msinttypes.googlecode.com/svn/trunk/inttypes.h -O inttypes.h
+        wget http://msinttypes.googlecode.com/svn/trunk/stdint.h -O stdint.h
+        wget https://github.com/pyca/pynacl/archive/v0.3.0.zip -O pynacl.zip && unzip pynacl.zip -d pynacl && rm pynacl.zip
+        wget https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi -O VCForPython27.msi
+
+        cd ..
+
+        makensis windows/ob.nsi
+        ;;
+    osx*)
+        echo 'No installer for OSX yet.'
+esac
+
+
 
 #if grunt build; then
 #    echo "OpenBazaar built successfully!"
