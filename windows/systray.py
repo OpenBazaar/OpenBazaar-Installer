@@ -5,12 +5,9 @@
 # Date       : 11 April 2005
 # Notes      : Based on (i.e. ripped off from) Mark Hammond's
 #              win32gui_taskbar.py and win32gui_menu.py demos from PyWin32
-'''TODO
-
-For now, the demo at the bottom shows how to use it...'''
 
 import os
-
+import psutil
 import subprocess
 
 import win32api
@@ -231,16 +228,27 @@ if __name__ == '__main__':
     icon = 'systray.ico'
     hover_text = "OpenBazaar"
 
+    install = subprocess.Popen(['npm', 'install'], shell=True, cwd='OpenBazaar-Client')
+    install.wait()
+    client = subprocess.Popen(['npm', 'start'], shell=True, cwd='OpenBazaar-Client')
+    server = subprocess.Popen(['pythonw', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
+
+
+    def kill(proc_pid):
+        process = psutil.Process(proc_pid)
+        for proc in process.get_children(recursive=True):
+            proc.kill()
+        process.kill()
 
     def open_client(sysTrayIcon):
-        subprocess.Popen(['Powershell', '-ExecutionPolicy', 'ByPass', '-File', 'OpenBazaar.ps1'])
+        client = subprocess.Popen(['npm', 'start'], shell=True, cwd='OpenBazaar-Client')
 
 
     def start_server(sysTrayIcon):
         subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'start'])
 
 
-    def stop_server(sysTrayIcon):
+    def stop_server(sysTrayIcon=None):
         subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'stop'])
 
 
@@ -250,12 +258,15 @@ if __name__ == '__main__':
 
 
     menu_options = (
-        ('OpenBazaar', None, open_client),
+        ('Open OpenBazaar', None, open_client),
         ('Start OpenBazaar Server', None, start_server),
         ('Stop OpenBazaar Server', None, stop_server)
     )
 
     def bye(sysTrayIcon):
+        stop_server(None)
+        #if client:
+            #kill(client.pid)
         print 'Close System Tray Icon'
 
-    SysTrayIcon(icon, hover_text, menu_options, on_quit=bye, default_menu_index=1)
+    SysTrayIcon(icon, hover_text, menu_options, on_quit=bye, default_menu_index=1, window_class_name='OpenBazaar')

@@ -4,6 +4,7 @@
 ;Include Modern UI
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
+!include x64.nsh
 
 !addplugindir "$%AppData%"
 
@@ -22,8 +23,10 @@ CRCCheck on
 SetCompressor /SOLID lzma
 OutFile "OpenBazaar_Setup.exe"
 
+
 ;Default installation folder
 InstallDir "$LOCALAPPDATA\${APP_NAME}"
+!define TEMP_DIR "$LOCALAPPDATA\Temp\${APP_NAME}"
 
 ;Request application privileges
 RequestExecutionLevel admin
@@ -43,11 +46,11 @@ RequestExecutionLevel admin
 !define MUI_WELCOMEFINISHPAGE_BITMAP "OpenBazaar_Windows_Installer.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "OpenBazaar_Windows_Installer.bmp"
 !define MUI_ABORTWARNING
-;!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_LINK "${APP_URL}"
 !define MUI_FINISHPAGE_LINK_LOCATION "${APP_URL}"
-!define MUI_FINISHPAGE_RUN "Powershell.exe"
-!define MUI_FINISHPAGE_RUN_PARAMETERS "-ExecutionPolicy ByPass -File $INSTDIR\OpenBazaar.ps1"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\OpenBazaar.exe"
+!define MUI_FINISHPAGE_RUN_PARAMETERS ""
 !define MUI_FINISHPAGE_SHOWREADME ""
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "$(desktopShortcut)"
 !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
@@ -292,7 +295,7 @@ LangString desktopShortcut ${LANG_Welsh} "Llwybr Byr ar y Bwrdd Gwaith"
 ;    Install code     ;
 ; ------------------- ;
 Function .onInit ; check for previous version
-    Exec "taskkill /F /IM OpenBazaar.exe /T"
+    ;Exec "taskkill /F /IM OpenBazaar.exe /T"
     ReadRegStr $0 HKCU "${UNINSTALL_KEY}" "InstallString"
     StrCmp $0 "" done
     StrCpy $INSTDIR $0
@@ -311,36 +314,71 @@ Section ; App Files
     File /r "systray.ico"
     File /r "install.ps1"
     File /r "systray.py"
-    ;File /r "observice.py"
+
+    SetOutPath "${TEMP_DIR}"
+    File "../temp/python-2.7.10.msi"
+    File "../temp/vcredist.exe"
+    File "../temp/node.msi"
+    ;File /r "../temp/electron"
+    ;File "../temp/pywin32.exe"
 
 SectionEnd
 
-Section ; pyNaCl Install
+Section ; Install Software
 
-    DetailPrint "Configuring OpenBazaar (This can take a while)..."
-    nsExec::ExecToStack `Powershell.exe -ExecutionPolicy ByPass -File $INSTDIR\install.ps1 $INSTDIR`
-    Pop $0 # return value/error/timeout
-	Pop $1 # printed text, up to ${NSIS_MAX_STRLEN}
-SectionEnd
+    # Start Menu
+    createDirectory "$SMPROGRAMS\OpenBazaar"
+    createShortCut "$SMPROGRAMS\OpenBazaar\OpenBazaar.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\icon.ico"
 
-Section ; Set up Windows Service
-    ;FileOpen $9 "$INSTDIR\start_openbazaar.bat" w
-    ;FileWrite $9 "$INSTDIR\Python27\python.exe $INSTDIR\OpenBazaar-Server\openbazaard.py start"
-    ;FileClose $9
-    ;File /r "start_openbazaar.bat"
+    DetailPrint "Installing Node JS"
+    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
 
-    ;SimpleSC::InstallService "OpenBazaar4" "OpenBazaar Server Daemon4" "16" "2" "$INSTDIR\start_openbazaar.bat" "" "" ""
-    ;Pop $0 ; returns an errorcode (<>0) otherwise success (0)
-    ;    IntCmp $0 0 Done +1 +1
-    ;    Push $0
-    ;    SimpleSC::GetErrorMessage
-    ;    Pop $0
-    ;    MessageBox MB_OK|MB_ICONSTOP "Stopping fails - Reason: $0"
-    ;  Done:
+    DetailPrint "Installing Python 2.7.10"
+    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.10.msi" TARGETDIR=$INSTDIR\python27'
 
-    ;'nsExec::ExecToStack `$INSTDIR\Python27\python.exe $INSTDIR\observice.py install`
-    ;Pop $0
-    ;MessageBox MB_OK|MB_ICONSTOP "Result: $0"
+    DetailPrint "Installing Visual C++ Redistributable"
+    ExecWait '"vcredist.exe" /passive /quiet /norestart'
+
+    DetailPrint "Installing pynacl"
+    ExecWait '"$INSTDIR\python27\scripts\pip.exe" install cffi six pyinstaller google-apputils'
+
+    ExecWait '"setx" PATH "%PATH%;$INSTDIR\python27;$INSTDIR\python27\scripts"'
+
+    DetailPrint "Installing pynacl"
+    ${If} ${RunningX64}
+        File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
+        Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "$INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
+        nsExec::ExecToLog '"$INSTDIR\python27\scripts\easy_install.exe" $INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
+        DetailPrint "easy_install returned $0"
+    ${Else}
+        File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
+        Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "$INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
+        nsExec::ExecToLog '"$INSTDIR\python27\scripts\easy_install.exe" $INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
+        DetailPrint "easy_install returned $0"
+    ${EndIf}
+
+    DetailPrint "Installing Python modules"
+    SetOutPath "$INSTDIR\OpenBazaar-Server"
+    nsExec::ExecToLog '$INSTDIR\python27\scripts\pip install -r requirements.txt'
+    Pop $0
+    ${If} $0 = 0
+        Pop $1
+        DetailPrint "pip install returned $1"
+    ${EndIf}
+
+
+    DetailPrint "Building OpenBazaar.exe"
+    SetOutPath "$INSTDIR"
+    nsExec::ExecToLog '"$INSTDIR\python27\scripts\pyinstaller" --onefile --windowed $INSTDIR\systray.py --icon=$INSTDIR\systray.ico'
+    Pop $0
+    DetailPrint "pyinstaller returned $0"
+
+    Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
+
+    DetailPrint "Installing node modules"
+    SetOutPath "$INSTDIR\OpenBazaar-Client"
+    ExecWait '"$INSTDIR\node\npm.exe" install' $0
+    DetailPrint "npm install returned $0"
 
 SectionEnd
 
@@ -366,5 +404,6 @@ SectionEnd
 ;  Desktop Shortcut  ;
 ; ------------------ ;
 Function finishpageaction
-    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "Powershell.exe" "-ExecutionPolicy ByPass -File OpenBazaar.ps1" "$INSTDIR\systray.ico" "" "" "" "${APP_NAME} ${PT_VERSION}"
+    SetOutPath "$INSTDIR"
+    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\systray.ico" "" "" "" "${APP_NAME} ${PT_VERSION}"
 FunctionEnd
