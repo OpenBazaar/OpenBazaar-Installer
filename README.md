@@ -3,6 +3,8 @@
 In this repository we'll have the scripts necessary to create binary distributions for different operating systems.
 The goal here is to have a 1-step build process.
 
+This repository is not to install the software, but to BUILD the installer itself. We will make downloadable installer executables available at https://openbazaar.org.
+
 ## Linux
 
 Coming soon!
