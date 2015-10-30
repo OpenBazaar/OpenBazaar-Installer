@@ -5,9 +5,11 @@ The goal here is to have a 1-step build process.
 
 This repository is not to install the software, but to BUILD the installer itself. We will make downloadable installer executables available at https://openbazaar.org.
 
+This creation script has only been tested running on OS X Yosemite.
+
 ## Linux
 
-Coming soon!
+sh make_openbazaar.sh linux
 
 ## Windows
 
@@ -20,4 +22,4 @@ Remember to clear out the temp/ folder before building a different architecture
 
 ## OSX
 
-Coming soon!
+sh make_openbazaar.sh osx
