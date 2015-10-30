@@ -231,23 +231,35 @@ mkdir -p temp
 case $OS in win32*)
         export OB_OS=win32
 
+        brew install wine
+        npm install electron-packager
+
+        echo 'Compiling node packages'
+        cd OpenBazaar-Client
+        npm install
+        npm install flatten-packages
+        node_modules/.bin/flatten-packages
+
+        echo 'Packaging Electron application'
+        cd ../temp
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=0.33.9 --asar --icon=../windows/icon.ico --overwrite
+        cd ..
+
+        echo 'Rename the folder'
+        mv temp/OpenBazaar_Client-win32-ia32 temp/OpenBazaar-Client
+
+        echo 'Downloading installers'
+
         cd temp
 
         if [ ! -f python-2.7.10.msi ]; then
             wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.msi -O python-2.7.10.msi
         fi
-        if [ ! -f node.msi ]; then
-            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x86.msi -O node.msi
-        fi
-        if [ ! -f electron ]; then
-            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-ia32.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
-        fi
-        if [ ! -f pywin32.exe ]; then
-            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download -O pywin32.exe
-        fi
+
         if [ ! -f vcredist.exe ]; then
             wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
         fi
+
         if [ ! -f pynacl ]; then
             wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip pynacl_win32.zip && rm pynacl_win32.zip
             wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip pynacl_win64.zip && rm pynacl_win64.zip
