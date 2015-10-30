@@ -228,11 +228,10 @@ if __name__ == '__main__':
     icon = 'systray.ico'
     hover_text = "OpenBazaar"
 
+    server = subprocess.Popen(['pythonw', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
     install = subprocess.Popen(['npm', 'install'], shell=True, cwd='OpenBazaar-Client')
     install.wait()
     client = subprocess.Popen(['npm', 'start'], shell=True, cwd='OpenBazaar-Client')
-    server = subprocess.Popen(['pythonw', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
-
 
     def kill(proc_pid):
         process = psutil.Process(proc_pid)
@@ -241,11 +240,15 @@ if __name__ == '__main__':
         process.kill()
 
     def open_client(sysTrayIcon):
-        client = subprocess.Popen(['npm', 'start'], shell=True, cwd='OpenBazaar-Client')
+        subprocess.Popen('./OpenBazaar-Client/OpenBazaar_Client.exe')
 
 
     def start_server(sysTrayIcon):
         subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'start'])
+
+
+    def start_server_debug(sysTrayIcon):
+        subprocess.Popen(['python', "./openbazaar-server/openbazaard.py", 'start'])
 
 
     def stop_server(sysTrayIcon=None):
@@ -260,7 +263,8 @@ if __name__ == '__main__':
     menu_options = (
         ('Open OpenBazaar', None, open_client),
         ('Start OpenBazaar Server', None, start_server),
-        ('Stop OpenBazaar Server', None, stop_server)
+        ('Stop OpenBazaar Server', None, stop_server),
+        ('Start OpenBazaar Server (Debug)', None, start_server_debug)
     )
 
     def bye(sysTrayIcon):
