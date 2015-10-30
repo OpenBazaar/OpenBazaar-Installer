@@ -1,0 +1,31 @@
+{
+  "name": "openbazaar",
+  "version": "1.0.0",
+  "description": "Decentralized Peer to Peer Marketplace for Bitcoin",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenBazaar/OpenBazaar-Installer.git"
+  },
+  "keywords": [
+    "p2p",
+    "bitcoin",
+    "ecommerce",
+    "decentralized"
+  ],
+  "author": "OpenBazaar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OpenBazaar/OpenBazaar-Installer/issues"
+  },
+  "homepage": "https://github.com/OpenBazaar/OpenBazaar-Installer#readme",
+  "devDependencies": {
+    "electron-installer-dmg": "^0.1.0",
+    "electron-packager": "^5.1.0",
+    "grunt": "^0.4.5",
+    "grunt-electron-debian-installer": "^0.1.0"
+  }
+}
