@@ -259,15 +259,33 @@ case $OS in win32*)
         ;;
     win64*)
         export OB_OS=win64
-        
+
+        brew install wine
+        npm install electron-packager
+
+        echo 'Compiling node packages'
+        cd OpenBazaar-Client
+        npm install
+        npm install flatten-packages
+        node_modules/.bin/flatten-packages
+
+        echo 'Packaging Electron application'
+        cd ../temp
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=0.33.9 --asar --icon=../windows/icon.ico --overwrite
+        cd ..
+
+        echo 'Rename the folder'
+        mv temp/OpenBazaar_Client-win32-x64 temp/OpenBazaar-Client
+
+        echo 'Downloading installers'
         cd temp/
 
         if [ ! -f python-2.7.10.msi ]; then
             wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi -O python-2.7.10.msi
         fi
-        if [ ! -f node.msi ]; then
-            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
-        fi
+        #if [ ! -f node.msi ]; then
+        #    wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
+        #fi
 #        if [ ! -f electron.zip ]; then
 #            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
 #        fi
@@ -284,19 +302,33 @@ case $OS in win32*)
 
         cd ..
 
-        makensis windows/ob.nsi
+        makensis ./windows/ob.nsi
         ;;
+
     osx*)
-        echo 'No installer for OSX yet.'
+        echo 'Building OS X binary'
+
+        cp -rf OpenBazaar-Client build/
+        cp -rf OpenBazaar-Server build/OpenBazaar-Client/
+
+        electron-packager ./build/OpenBazaar-Client OpenBazaar --platform=darwin --arch=x64 --icon=osx/tent.icns --version=0.25.1 --out=temp/ --overwrite
+
+        npm i electron-installer-dmg -g
+
+        electron-installer-dmg ./temp/OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./temp/OpenBazaar-darwin-x64/ --overwrite --background=./osx/finder_background.png --debug
+        ;;
+
+    linux*)
+
+        echo 'Building Linux binary'
+
+        cp -rf OpenBazaar-Client build/
+        cp -rf OpenBazaar-Server build/OpenBazaar-Client/
+
+        electron-packager ./build/OpenBazaar-Client OpenBazaar --platform=linux --arch=all --version=0.25.1 --out=temp/ --overwrite
+
+        npm install grunt-electron-debian-installer --save-dev
+
+
+
 esac
-
-
-
-#if grunt build; then
-#    echo "OpenBazaar built successfully!"
-#    echo "Run 'grunt start' from inside the repository to launch the app"
-#    echo "Enjoy!"
-#else
-#    echo "OpenBazaar encountered an error and couldn't be built"
-#    exit 5
-#fi
