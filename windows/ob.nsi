@@ -6,6 +6,7 @@
 !include "FileFunc.nsh"
 !include x64.nsh
 
+
 !addplugindir "$%AppData%"
 
 ; ------------------- ;
@@ -34,6 +35,8 @@ RequestExecutionLevel admin
 !define APP_LAUNCHER "OpenBazaar.exe"
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
+!include python.nsh
+
 ; ------------------- ;
 ;     UI Settings     ;
 ; ------------------- ;
@@ -49,8 +52,9 @@ RequestExecutionLevel admin
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_LINK "${APP_URL}"
 !define MUI_FINISHPAGE_LINK_LOCATION "${APP_URL}"
-!define MUI_FINISHPAGE_RUN "$INSTDIR\OpenBazaar.exe"
-!define MUI_FINISHPAGE_RUN_PARAMETERS ""
+!define MUI_FINISHPAGE_RUN_NOTCHECKED
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_FUNCTION RunOB
 !define MUI_FINISHPAGE_SHOWREADME ""
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "$(desktopShortcut)"
 !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
@@ -291,6 +295,11 @@ LangString desktopShortcut ${LANG_Ukrainian} "Ярлик на робочому �
 ;LangString desktopShortcut ${LANG_Vietnamese} "Lối tắt trên màn (Desktop Shortcut)"
 LangString desktopShortcut ${LANG_Welsh} "Llwybr Byr ar y Bwrdd Gwaith"
 
+Function RunOB
+    SetOutPath $INSTDIR
+    Exec "$INSTDIR\OpenBazaar.exe"
+FunctionEnd
+
 ; ------------------- ;
 ;    Install code     ;
 ; ------------------- ;
@@ -307,7 +316,7 @@ Section ; App Files
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
     SetOutPath "$INSTDIR"
-    File /r "../OpenBazaar-Client"
+    File /r "../temp/OpenBazaar-Client"
     File /r "../OpenBazaar-Server"
     File /r "OpenBazaar.ps1"
     File /r "icon.ico"
@@ -318,7 +327,7 @@ Section ; App Files
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.10.msi"
     File "../temp/vcredist.exe"
-    File "../temp/node.msi"
+    ;File "../temp/node.msi"
     ;File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
@@ -330,36 +339,36 @@ Section ; Install Software
     createDirectory "$SMPROGRAMS\OpenBazaar"
     createShortCut "$SMPROGRAMS\OpenBazaar\OpenBazaar.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\icon.ico"
 
-    DetailPrint "Installing Node JS"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
+    ;DetailPrint "Installing Node JS"
+    ;ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
 
     DetailPrint "Installing Python 2.7.10"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.10.msi" TARGETDIR=$INSTDIR\python27'
+    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.10.msi" TARGETDIR=c:\python27'
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
     DetailPrint "Installing pynacl"
-    ExecWait '"$INSTDIR\python27\scripts\pip.exe" install cffi six pyinstaller google-apputils'
+    ExecWait '"c:\python27\scripts\pip.exe" install cffi six pyinstaller google-apputils'
 
-    ExecWait '"setx" PATH "%PATH%;$INSTDIR\python27;$INSTDIR\python27\scripts"'
+    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts"'
 
     DetailPrint "Installing pynacl"
     ${If} ${RunningX64}
         File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
-        Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "$INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
-        nsExec::ExecToLog '"$INSTDIR\python27\scripts\easy_install.exe" $INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
+        Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
+        nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
         DetailPrint "easy_install returned $0"
     ${Else}
         File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
-        Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "$INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
-        nsExec::ExecToLog '"$INSTDIR\python27\scripts\easy_install.exe" $INSTDIR\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
+        Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
+        nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
         DetailPrint "easy_install returned $0"
     ${EndIf}
 
     DetailPrint "Installing Python modules"
     SetOutPath "$INSTDIR\OpenBazaar-Server"
-    nsExec::ExecToLog '$INSTDIR\python27\scripts\pip install -r requirements.txt'
+    nsExec::ExecToLog 'c:\python27\scripts\pip install -r requirements.txt'
     Pop $0
     ${If} $0 = 0
         Pop $1
@@ -369,16 +378,12 @@ Section ; Install Software
 
     DetailPrint "Building OpenBazaar.exe"
     SetOutPath "$INSTDIR"
-    nsExec::ExecToLog '"$INSTDIR\python27\scripts\pyinstaller" --onefile --windowed $INSTDIR\systray.py --icon=$INSTDIR\systray.ico'
+    nsExec::ExecToLog '"c:\python27\scripts\pyinstaller" --onefile --windowed $INSTDIR\systray.py --icon=$INSTDIR\systray.ico'
     Pop $0
     DetailPrint "pyinstaller returned $0"
 
     Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
 
-    DetailPrint "Installing node modules"
-    SetOutPath "$INSTDIR\OpenBazaar-Client"
-    ExecWait '"$INSTDIR\node\npm.exe" install' $0
-    DetailPrint "npm install returned $0"
 
 SectionEnd
 
