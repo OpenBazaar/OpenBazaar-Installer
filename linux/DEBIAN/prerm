@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+echo "[openbazaar] Cleaning up backups..."
+cd /usr/share/openbazaar/html
+sudo rm -rf backups/*
+
+cd /usr/share/openbazaar
+echo "[openbazaar] Cleaning up database..."
+sudo rm -fr db/*
+
+echo "[openbazaar] Cleaning up logs..."
+sudo rm -fr logs
+
+echo "[openbazaar] Cleaning up post installation binaries and resources..."
+sudo rm -fr node/*
+sudo rm -fr html/*
+
+echo "[openbazaar] Done cleaning."
+
+exit 0

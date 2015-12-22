@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+echo "[openbazaar] Installing OpenBazaar python dependencies..."
+
+pushd /usr/share/openbazaar
+sudo virtualenv env
+sudo ./env/bin/pip install -r requirements.txt
+popd
+
+sudo chmod -R 775 /usr/share/openbazaar
+sudo chown -R $SUDO_USER:$SUDO_USER /usr/share/openbazaar
+
+ln -s /usr/share/javascript/jquery/jquery.js /usr/share/openbazaar/html/bower_components/jquery/dist/jquery.js
+ln -s /usr/share/javascript/jquery/jquery.js /usr/share/openbazaar/html/bower_components/jquery/src/jquery.js
+ln -s /usr/share/javascript/jquery/jquery.min.js /usr/share/openbazaar/html/bower_components/jquery/dist/jquery.min.js
+ln -s /usr/share/javascript/jquery/jquery.min.js /usr/share/openbazaar/html/vendors/jquery.min.js
+
+echo
+echo
+echo
+echo
+echo "[openbazaar] Installation finished."
+echo "[openbazaar] Now type 'openbazaar start' to start OpenBazaar."
+echo
+echo
+echo
+echo

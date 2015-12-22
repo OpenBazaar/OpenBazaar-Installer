@@ -1,0 +1,179 @@
+#!/usr/bin/env python
+"""
+Author: Angel Leon (gubatron@openbazaar.org)
+Created: August 27th, 2014
+
+A simple debian binary package (.deb) builder script.
+
+In the future I'll make another script that uses the appropiate debian
+developer toolkit to create a formal debian source package.
+"""
+import os
+import re
+
+OB_PROJECT_DIR = os.path.realpath('../..')
+BIN_DIR = '/usr/bin'
+SHARE_DIR = '/usr/share'
+USR_SHARE_OB_DIR = SHARE_DIR +'/openbazaar'
+APP_DIR = SHARE_DIR + '/applications'
+HICOLOR_DIR = SHARE_DIR + '/icons/hicolor'
+DOC_DIR = SHARE_DIR + '/doc/openbazaar'
+MAN_DIR = SHARE_DIR + '/man/man1'
+
+
+def assert_current_dir_is(dirname):
+    assert(os.path.basename(os.path.realpath(os.path.curdir)) == dirname)
+
+
+def read_version_from_changelog():
+    assert_current_dir_is('linux')
+    f = open('../../changelog', 'r')
+    first_line = f.readline()
+    f.close()
+
+    m = re.search('openbazaar.*?([0-9]+\.[0-9]+\.[0-9]+).*', first_line)
+    return m.group(1)
+
+
+def delete_previous_package(packageName):
+    assert_current_dir_is('linux')
+    if os.path.exists(packageName):
+        os.system("rm -vf '%s'" % packageName)
+
+
+def clean_debian_folder():
+    '''clean everything but the files we'll take to build the installer'''
+    assert_current_dir_is('output')
+
+    contents = os.listdir('.')
+    DONT_DELETE = ('OUTPUT')
+
+    for item in contents:
+        if item in DONT_DELETE:
+            print "keeping '%s'" % item
+            continue
+
+        os.system("rm -vfr '%s'" % item)
+
+
+def cleanup():
+    assert_current_dir_is('linux')
+    os.system('rm -vfr output')
+    os.system('rm -vf *.deb')
+    os.system('rm -vf *.rpm')
+
+
+def create_folder_structure():
+    assert_current_dir_is('linux')
+    os.makedirs('./output')
+    os.chdir('output')
+    assert_current_dir_is('output')
+
+    os.makedirs('.' + USR_SHARE_OB_DIR + '/db')
+    os.makedirs('.' + USR_SHARE_OB_DIR + '/logs')
+    os.makedirs('.' + USR_SHARE_OB_DIR + '/html/backups')
+    os.system('chmod 0775 .' + USR_SHARE_OB_DIR + '/db')
+    os.system('chmod 0775 .' + USR_SHARE_OB_DIR + '/logs')
+    os.system('chmod 0775 .' + USR_SHARE_OB_DIR + '/html/backups')
+    os.makedirs('.' + USR_SHARE_OB_DIR + '/msig')
+
+    os.makedirs('.' + HICOLOR_DIR + '/16x16/apps')
+    os.makedirs('.' + HICOLOR_DIR + '/32x32/apps')
+    os.makedirs('.' + HICOLOR_DIR + '/48x48/apps')
+    os.makedirs('.' + HICOLOR_DIR + '/64x64/apps')
+    os.makedirs('.' + HICOLOR_DIR + '/128x128/apps')
+    os.makedirs('.' + APP_DIR)
+    os.makedirs('.' + BIN_DIR)
+    os.makedirs('.' + DOC_DIR)
+    os.makedirs('.' + MAN_DIR)
+
+    os.chdir('..')
+    assert_current_dir_is('linux')
+
+
+def copy_files():
+    assert_current_dir_is('linux')
+    os.chdir('output')
+    assert_current_dir_is('output')
+
+    # copy the launcher scripts and icon
+    os.system('cp -v ' + OB_PROJECT_DIR + '/requirements.txt .' + USR_SHARE_OB_DIR)
+    os.system('cp -v ' + OB_PROJECT_DIR + '/configure.sh .' + USR_SHARE_OB_DIR)
+
+    # copy man, gzip it, put it in the man dir
+    os.system('cp -v ' + OB_PROJECT_DIR + '/docs/openbazaar.1 .')
+    os.system('gzip -9 openbazaar.1')
+    os.system('mv -v openbazaar.1.gz .' + MAN_DIR)
+
+    # take care of the icons
+    os.system('cp -v ../icons/16x16.png .' + HICOLOR_DIR + '/16x16/apps/openbazaar.png')
+    os.system('cp -v ../icons/32x32.png .' + HICOLOR_DIR + '/32x32/apps/openbazaar.png')
+    os.system('cp -v ../icons/48x48.png .' + HICOLOR_DIR + '/48x48/apps/openbazaar.png')
+    os.system('cp -v ../icons/64x64.png .' + HICOLOR_DIR + '/64x64/apps/openbazaar.png')
+    os.system('cp -v ../icons/128x128.png .' + HICOLOR_DIR + '/128x128/apps/openbazaar.png')
+
+    # copy LICENSE.md as 'copyright' and changelog to /usr/share/doc/openbazaar
+    os.system('cp -v ' + OB_PROJECT_DIR + '/changelog .' + DOC_DIR)
+    os.system('cp -v ' + OB_PROJECT_DIR + '/LICENSE.md .' + DOC_DIR + '/copyright')
+    os.system('gzip -9 .' + DOC_DIR + '/changelog')
+
+    # make sure launcher script is executable
+    os.system('cp -v ' + OB_PROJECT_DIR + '/openbazaar .' + BIN_DIR)
+    os.system('chmod 0755 .' + BIN_DIR + '/openbazaar')
+
+    # copy DEBIAN files
+    os.system('cp -vR ../DEBIAN .')
+
+    # copy the desktop launcher
+    os.system('cp -v ../openbazaar.desktop .' + APP_DIR)
+    os.system('chmod 0644 .' + APP_DIR + '/openbazaar.desktop')
+
+    # copy server, web files and third party dependency sources we've been forced to include
+    # in our project because their pip scripts fail.
+    os.system('cp -vR ' + OB_PROJECT_DIR + '/node .' + USR_SHARE_OB_DIR + '/')
+    os.system('cp -vR ' + OB_PROJECT_DIR + '/html .' + USR_SHARE_OB_DIR + '/')
+
+    # fix permissions to avoid lintian errors
+    os.system('chmod -R 0644 .' + USR_SHARE_OB_DIR + '/node')
+    os.system('chmod -R 0644 .' + USR_SHARE_OB_DIR + '/html')
+    os.system('find .' + USR_SHARE_OB_DIR + ' -type d | xargs chmod 0755')
+    os.system('find .' + USR_SHARE_OB_DIR + ' | egrep "(\.sh)" | xargs chmod 0755')
+
+    # get rid of as many binaries as you can
+    os.system('find .' + USR_SHARE_OB_DIR + ' | egrep "(\.pyc|\.o|\.so)" | xargs rm -vf')
+
+    # get rid of extra LICENSE files
+    os.system('find .' + USR_SHARE_OB_DIR + ' | grep -e LICENSE$ | xargs rm -vf')
+
+    # make sure we don't include libraries that are available via apt-get dependencies
+    os.system('find .' + USR_SHARE_OB_DIR + ' | egrep "(jquery\.js|jquery\.min\.js)$" | xargs rm -vf')
+
+    # make sure backup folder is empty
+    os.system('rm -vf .' + USR_SHARE_OB_DIR + '/html/backups/*')
+
+    os.chdir('..')
+    assert_current_dir_is('linux')
+
+
+def build_deb_package(packageName):
+    '''builds the .deb'''
+    assert_current_dir_is('linux')
+    os.system('dpkg -D1 -b output ' + packageName)
+
+
+def build_rpm_package(packageName):
+    '''creates an .rpm out of the .deb file'''
+    assert_current_dir_is('linux')
+    os.system('rm -vfr openbazaar-' + read_version_from_changelog())
+    os.system('fakeroot alien --to-rpm --scripts ' + packageName)
+
+
+if __name__ == '__main__':
+    dotDebName = 'openbazaar-' + read_version_from_changelog() + '.all.deb'
+
+    cleanup()
+    delete_previous_package(dotDebName)
+    create_folder_structure()
+    copy_files()
+    build_deb_package(dotDebName)
+    build_rpm_package(dotDebName)

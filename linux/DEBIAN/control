@@ -1,0 +1,15 @@
+Package: openbazaar
+Version: 0.2.0
+Source: openbazaar
+Section: net
+Priority: optional
+Maintainer: Gubatron <gubatron@openbazaar.org>
+Build-Depends:
+Standards-Version: 3.9.5
+Homepage: https://openbazaar.org/
+Architecture: all
+Depends: python, python2.7, python-pip, python-dev, libjpeg-dev, sqlite3, libssl-dev, openssl, build-essential, rng-tools, lintian, libjs-jquery
+Description: decentralized network for Bitcoin commerce online without fees or censorship
+ Setup a decentralized store or buy from others' stores. Uses p2p for
+ decentralization. Uses multisignature to protect funds with 3rd party
+ arbitration.
