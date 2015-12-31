@@ -162,62 +162,12 @@ if [ "${clone_repo}" = "True" ]; then
         fi
     fi
 fi
-try="True"
-tries=0
-while [ "${try}" = "True" ]; do
-    read -p "Do you wish to install the required dependencies for OpenBazaar and setup for building? (yes/no) [yes] " rd_dep
-    if [ -z "${rd_dep}" ]; then
-        rd_dep="yes"
-    fi
-    tries=$((${tries}+1))
-    if [ "${rd_dep}" = "yes" ] || [ "${rd_dep}" = "no" ]; then
-        try="False"
-    elif [ "$tries" -ge "3" ]; then
-        echo "No valid input, exiting"
-        exit 3
-    else
-        echo "Not a valid answer, please try again"
-    fi
-done
 
 if [ -z "${dir}" ]; then
     dir="."
 fi
 cd ${dir}
 echo "Switched to ${PWD}"
-
-#if [ "${rd_dep}" = "yes" ]; then
-#    echo "Installing global dependencies"
-#    if execsudo "npm install -g grunt-cli"; then
-#        echo "Global dependencies installed successfully!"
-#    else
-#        echo "Global dependencies encountered an error while installing"
-#        exit 4
-#    fi
-
-#    echo "Installing local dependencies"
-#    if execsudo "npm install"; then
-#        echo "Local dependencies installed successfully!"
-#    else
-#        echo "Local dependencies encountered an error while installing"
-#        exit 4
-#    fi
-
-#    curh=$HOME
-#    case ${OSTYPE} in msys*)
-#        ;;
-#        *)
-#        if execsudo "chown -R $USER ." && execsudo "chown -R $USER $curh/.cache"; then
-#            echo "Local permissions corrected successfully!"
-#        else
-#            echo "Local permissions encountered an error while correcting"
-#            exit 4
-#        fi
-#        ;;
-#    esac
-
-#    echo "Successfully setup for OpenBazaar"
-#fi
 
 # Check for temp folder and create if does not exist
 mkdir -p temp
@@ -229,7 +179,7 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
-	
+	npm install grunt-cli
         npm install electron-packager
 
         echo 'Compiling node packages'
@@ -270,7 +220,7 @@ case $OS in win32*)
     win64*)
         export OB_OS=win64
 
-        brew install wine
+       	npm install grunt-cli
         npm install electron-packager
 
         echo 'Compiling node packages'
