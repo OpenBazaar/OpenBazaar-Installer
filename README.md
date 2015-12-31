@@ -3,6 +3,15 @@
 In this repository we'll have the scripts necessary to create binary distributions for different operating systems.
 The goal here is to have a 1-step build process.
 
+You need of the follow dependencies:
+wine
+grunt
+nodejs (npm executable) 
+(optional) upx and ucl to optimize standalone executable
+
+Install them on brew (OSX) or do a query on
+your Linux package manager.
+
 This repository is not to install the software, but to BUILD the installer itself. We will make downloadable installer executables available at https://openbazaar.org.
 
 This creation script has only been tested running on OS X Yosemite.
@@ -19,9 +28,6 @@ To build the Windows installer on Linux and OSX you can run:
 * sh make_openbazaar.sh win64 (64-bit)
 
 Remember to clear out the temp/ folder before building a different architecture.
-
-You need of wine as build dependency. Install it on brew (OSX) or do a query on
-your Linux package manager.
 
 ## OSX
 
