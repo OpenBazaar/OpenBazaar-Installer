@@ -199,6 +199,10 @@ case $OS in win32*)
         echo 'Downloading installers'
 
         cd temp
+	
+	if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x86.msi -O node.msi
+        fi
 
         if [ ! -f python-2.7.11.msi ]; then
             wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.msi -O python-2.7.11.msi
@@ -243,9 +247,9 @@ case $OS in win32*)
         if [ ! -f python-2.7.10.msi ]; then
             wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi -O python-2.7.10.msi
         fi
-        #if [ ! -f node.msi ]; then
-        #    wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
-        #fi
+        if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
+        fi
 #        if [ ! -f electron.zip ]; then
 #            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
 #        fi

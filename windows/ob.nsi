@@ -327,7 +327,7 @@ Section ; App Files
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
-    ;File "../temp/node.msi"
+    File "../temp/node.msi"
     ;File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
@@ -339,8 +339,8 @@ Section ; Install Software
     createDirectory "$SMPROGRAMS\OpenBazaar"
     createShortCut "$SMPROGRAMS\OpenBazaar\OpenBazaar.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\icon.ico"
 
-    ;DetailPrint "Installing Node JS"
-    ;ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
+    DetailPrint "Installing Node JS"
+    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
 
     DetailPrint "Installing Python 2.7.11"
     ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=c:\python27'
