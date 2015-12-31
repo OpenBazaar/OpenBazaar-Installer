@@ -19,6 +19,8 @@ To build the Windows installer on Linux and OSX you can run:
 * sh make_openbazaar.sh win64 (64-bit)
 
 Remember to clear out the temp/ folder before building a different architecture
+You need of wine as build dependency. Install it on brew (OSX) or do a query on
+your Linux package manager.
 
 ## OSX
 

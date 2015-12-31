@@ -230,8 +230,11 @@ mkdir -p temp
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
+	
+	if ! [ -x "$(command -v wine)" ]; then
+  		echo 'wine is not installed.' >&2
+	fi
 
-        brew install wine
         npm install electron-packager
 
         echo 'Compiling node packages'
