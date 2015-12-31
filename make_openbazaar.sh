@@ -20,15 +20,10 @@ clone_repo="True"
 clone_url_server="https://github.com/OpenBazaar/OpenBazaar-Server.git"
 clone_url_client="https://github.com/OpenBazaar/OpenBazaar-Client.git"
 
-execsudo() {
-    case ${OSTYPE} in msys*)
-       echo $OSTYPE
-       $1
-       ;;
-    *)
-       sudo $1
-       ;;
-    esac
+command_exists () {
+    if ! [ -x "$(command -v $1)" ]; then
+ 	echo '$1 is not installed.' >&2
+    fi
 }
 
 clone_command() {
@@ -114,10 +109,10 @@ if [ "${clone_repo}" = "True" ]; then
             echo "Removing old directory"
             if [ "${dir}" != "." ] || [ "${dir}" != "$PWD" ]; then
                 echo "Cleaning up from inside the destination directory"
-                sudo rm -rf ${dir}/*
+                rm -rf ${dir}/*
             else
                 echo "Cleaning up from outside the destination directory"
-                sudo rm -rf ${dir}
+                rm -rf ${dir}
             fi
             clone_command
         else
@@ -191,50 +186,50 @@ fi
 cd ${dir}
 echo "Switched to ${PWD}"
 
-if [ "${rd_dep}" = "yes" ]; then
-    echo "Installing global dependencies"
-    if execsudo "npm install -g grunt-cli"; then
-        echo "Global dependencies installed successfully!"
-    else
-        echo "Global dependencies encountered an error while installing"
-        exit 4
-    fi
+#if [ "${rd_dep}" = "yes" ]; then
+#    echo "Installing global dependencies"
+#    if execsudo "npm install -g grunt-cli"; then
+#        echo "Global dependencies installed successfully!"
+#    else
+#        echo "Global dependencies encountered an error while installing"
+#        exit 4
+#    fi
 
-    echo "Installing local dependencies"
-    if execsudo "npm install"; then
-        echo "Local dependencies installed successfully!"
-    else
-        echo "Local dependencies encountered an error while installing"
-        exit 4
-    fi
+#    echo "Installing local dependencies"
+#    if execsudo "npm install"; then
+#        echo "Local dependencies installed successfully!"
+#    else
+#        echo "Local dependencies encountered an error while installing"
+#        exit 4
+#    fi
 
-    curh=$HOME
-    case ${OSTYPE} in msys*)
-        ;;
-        *)
-        if execsudo "chown -R $USER ." && execsudo "chown -R $USER $curh/.cache"; then
-            echo "Local permissions corrected successfully!"
-        else
-            echo "Local permissions encountered an error while correcting"
-            exit 4
-        fi
-        ;;
-    esac
+#    curh=$HOME
+#    case ${OSTYPE} in msys*)
+#        ;;
+#        *)
+#        if execsudo "chown -R $USER ." && execsudo "chown -R $USER $curh/.cache"; then
+#            echo "Local permissions corrected successfully!"
+#        else
+#            echo "Local permissions encountered an error while correcting"
+#            exit 4
+#        fi
+#        ;;
+#    esac
 
-    echo "Successfully setup for OpenBazaar"
-fi
+#    echo "Successfully setup for OpenBazaar"
+#fi
 
 # Check for temp folder and create if does not exist
 mkdir -p temp
+
+command_exists grunt
+command_exists npm
+command_exists wine
 
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
 	
-	if ! [ -x "$(command -v wine)" ]; then
-  		echo 'wine is not installed.' >&2
-	fi
-
         npm install electron-packager
 
         echo 'Compiling node packages'
@@ -332,7 +327,7 @@ case $OS in win32*)
         virtualenv env
         source env/bin/activate
         pip install -r requirements.txt
-        pip install pyinstaller==3.0
+        pip install git+https://github.com/pyinstaller/pyinstaller.git
         env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
         cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
         cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
@@ -354,19 +349,19 @@ case $OS in win32*)
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
-        virtualenv env
+        virtualenv2 env
         source env/bin/activate
-        pip install -r requirements.txt
-        pip install pyinstaller==3.0
-        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns openbazaard.py
+        pip2 install -r requirements.txt
+        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
+        env/bin/pyinstaller -F -n openbazaard -i ../linux/icons/128x128.png openbazaard.py
         cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
         cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
         cd ..
 
-	    sudo apt-get install npm nodejs-legacy
-	    sudo npm install -g electron-packager
-	    sudo npm install -g grunt-cli
-        sudo npm install -g grunt-electron-debian-installer --save-dev
+
+	    npm install electron-packager
+	    npm install grunt-cli
+            npm install grunt-electron-debian-installer --save-dev
 
 	    cd OpenBazaar-Client/
 	    npm install
@@ -375,7 +370,7 @@ case $OS in win32*)
         electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=0.36.1 --out=temp/ --overwrite
 
         # Package into debian format
-        sudo grunt
+        grunt
 
 
 
