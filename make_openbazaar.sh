@@ -22,7 +22,7 @@ clone_url_client="https://github.com/OpenBazaar/OpenBazaar-Client.git"
 
 command_exists () {
     if ! [ -x "$(command -v $1)" ]; then
- 	echo '$1 is not installed.' >&2
+ 	echo "$1 is not installed." >&2
     fi
 }
 
@@ -174,7 +174,7 @@ mkdir -p temp
 
 command_exists grunt
 command_exists npm
-command_exists wine
+command_exists waine
 
 # Download OS specific installer files to package
 case $OS in win32*)
