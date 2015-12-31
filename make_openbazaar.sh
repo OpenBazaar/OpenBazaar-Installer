@@ -307,7 +307,7 @@ case $OS in win32*)
         source env/bin/activate
         pip2 install -r requirements.txt
         pip2 install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard -i ../linux/icons/128x128.png openbazaard.py
+        env/bin/pyinstaller -F -n openbazaard openbazaard.py
         cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
         cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
         cd ..
