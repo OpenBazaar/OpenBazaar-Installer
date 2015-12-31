@@ -174,7 +174,7 @@ mkdir -p temp
 
 command_exists grunt
 command_exists npm
-command_exists waine
+command_exists wine
 
 # Download OS specific installer files to package
 case $OS in win32*)
