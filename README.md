@@ -4,9 +4,13 @@ In this repository we'll have the scripts necessary to create binary distributio
 The goal here is to have a 1-step build process.
 
 You need of the follow dependencies:
+
 wine
+
 grunt
+
 nodejs (npm executable) 
+
 (optional) upx and ucl to optimize standalone executable
 
 Install them on brew (OSX) or do a query on
