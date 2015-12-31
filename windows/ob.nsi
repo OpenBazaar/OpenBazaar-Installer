@@ -325,7 +325,7 @@ Section ; App Files
     File /r "systray.py"
 
     SetOutPath "${TEMP_DIR}"
-    File "../temp/python-2.7.10.msi"
+    File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
     ;File "../temp/node.msi"
     ;File /r "../temp/electron"
@@ -342,14 +342,14 @@ Section ; Install Software
     ;DetailPrint "Installing Node JS"
     ;ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
 
-    DetailPrint "Installing Python 2.7.10"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.10.msi" TARGETDIR=c:\python27'
+    DetailPrint "Installing Python 2.7.11"
+    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=c:\python27'
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
     DetailPrint "Installing pynacl"
-    ExecWait '"c:\python27\scripts\pip.exe" install cffi six pyinstaller google-apputils'
+    ExecWait '"c:\python27\scripts\pip.exe" install cffi six google-apputils psutil'
 
     ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts"'
 
