@@ -200,8 +200,8 @@ case $OS in win32*)
 
         cd temp
 
-        if [ ! -f python-2.7.10.msi ]; then
-            wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.msi -O python-2.7.10.msi
+        if [ ! -f python-2.7.11.msi ]; then
+            wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.msi -O python-2.7.11.msi
         fi
 
         if [ ! -f vcredist.exe ]; then
