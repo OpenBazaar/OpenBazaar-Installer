@@ -13,7 +13,7 @@
 ## ./make_openbazaar.sh '-b release/0.3.4 https://github.com/OpenBazaar/OpenBazaar.git'
 ##
 ELECTRONVER=0.36.2
-NODEJSVER=5.3.0
+NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
 
