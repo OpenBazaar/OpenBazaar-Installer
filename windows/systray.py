@@ -1,4 +1,4 @@
-﻿# !/usr/bin/env python
+﻿#!/usr/bin/env python
 # Module     : SysTrayIcon.py
 # Synopsis   : Windows System tray icon.
 # Programmer : Simon Brunning - simon@brunningonline.net
