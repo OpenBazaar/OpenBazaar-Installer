@@ -1,5 +1,6 @@
 cffi 
 six
+google-apputils
 protobuf==2.6.1 
 psutil
 Twisted==14.0.2
