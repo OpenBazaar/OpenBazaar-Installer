@@ -327,9 +327,9 @@ Section ; App Files
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
-    File "../temp/node.msi"
+    ;File "../temp/node.msi"
     File "../temp/upx.exe"
-    ;File /r "../temp/electron"
+    File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
 SectionEnd
@@ -350,7 +350,7 @@ Section ; Install Software
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
     DetailPrint "Installing pynacl"
-    ExecWait '"c:\python27\scripts\pip.exe" install cffi six google-apputils psutil'
+    ExecWait '"c:\python27\scripts\pip.exe" install cffi six google-apputils psutil pystun requests autobahn protobuf bitcoin'
 
     ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts"'
 

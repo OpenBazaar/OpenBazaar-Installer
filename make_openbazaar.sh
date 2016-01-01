@@ -44,124 +44,13 @@ clone_command_client() {
     fi
 }
 
-if [ -e ".git/config" ]; then
-    dat=`cat .git/config | grep 'url'`
-    case ${dat} in *OpenBazaar-6*)
-        echo "You appear to be inside of a OpenBazaar repository already, not cloning"
-        clone_repo="False"
-        ;;
-    *)
-        try="True"
-        tries=0
-        while [ "${try}" = "True" ]; do
-            read -p "Looks like we are inside a git repository, do you wish to clone inside it? (yes/no) [no] " rd_cln
-            if [ -z "${rd_cln}" ]; then
-                rd_cln='no'
-            fi
-            tries=$((${tries}+1))
-            if [ "${rd_cln}" = "yes" ] || [ "${rd_cln}" = "no" ]; then
-                try="False"
-            elif [ "$tries" -ge "3" ]; then
-                echo "No valid input, exiting"
-                exit 1
-            else
-                echo "Not a valid answer, please try again"
-            fi
-        done
-        if [ "$rd_cln" = "no" ]; then
-            echo "You appear to be inside of a OpenBazaar repository already, not cloning"
-            clone_repo="False"
-        else
-            echo "You've chosen to clone inside the current directory"
-        fi
-        ;;
-    esac
-fi
-if [ "${clone_repo}" = "True" ]; then
-    echo "Cloning OpenBazaar-Server"
-    read -p "Where do you wish to clone OpenBazaar-Server to? [OpenBazaar-Server] " dir
-    if [ -z "${dir}" ]; then
-        dir='OpenBazaar-Server'
-    elif [ "${dir}" = "/" ]; then
-        dir='OpenBazaar-Server'
-    fi
-    if [ ! -d "${dir}" ]; then
-        clone_command
-    else
-        try="True"
-        tries=0
-        while [ "$try" = "True" ]; do
-            read -p "Directory ${dir} already exists, do you wish to delete it and redownload? (yes/no) [no] " rd_ans
-            if [ -z "${rd_ans}" ]; then
-                rd_ans='no'
-            fi
-            tries=$((${tries}+1))
-            if [ "${rd_ans}" = "yes" ] || [ "${rd_ans}" = "no" ]; then
-                try="False"
-            elif [ "$tries" -ge "3" ]; then
-                echo "No valid input, exiting"
-                exit 3
-            else
-                echo "Not a valid answer, please try again"
-            fi
-        done
-        if [ "${rd_ans}" = "yes" ]; then
-            echo "Removing old directory"
-            if [ "${dir}" != "." ] || [ "${dir}" != "$PWD" ]; then
-                echo "Cleaning up from inside the destination directory"
-                rm -rf ${dir}/*
-            else
-                echo "Cleaning up from outside the destination directory"
-                rm -rf ${dir}
-            fi
-            clone_command
-        else
-            echo "Directory already exists and you've chosen not to clone again"
-        fi
-    fi
 
-    echo "Cloning OpenBazaar-Client"
-    read -p "Where do you wish to clone OpenBazaar-Client to? [OpenBazaar-Client] " dir
-    if [ -z "${dir}" ]; then
-        dir='OpenBazaar-Client'
-    elif [ "${dir}" = "/" ]; then
-        dir='OpenBazaar-Client'
-    fi
-    if [ ! -d "${dir}" ]; then
-        clone_command_client
-    else
-        try="True"
-        tries=0
-        while [ "$try" = "True" ]; do
-            read -p "Directory ${dir} already exists, do you wish to delete it and redownload? (yes/no) [no] " rd_ans
-            if [ -z "${rd_ans}" ]; then
-                rd_ans='no'
-            fi
-            tries=$((${tries}+1))
-            if [ "${rd_ans}" = "yes" ] || [ "${rd_ans}" = "no" ]; then
-                try="False"
-            elif [ "$tries" -ge "3" ]; then
-                echo "No valid input, exiting"
-                exit 3
-            else
-                echo "Not a valid answer, please try again"
-            fi
-        done
-        if [ "${rd_ans}" = "yes" ]; then
-            echo "Removing old directory"
-            if [ "${dir}" != "." ] || [ "${dir}" != "$PWD" ]; then
-                echo "Cleaning up from inside the destination directory"
-                sudo rm -rf ${dir}/*
-            else
-                echo "Cleaning up from outside the destination directory"
-                sudo rm -rf ${dir}
-            fi
-            clone_command
-        else
-            echo "Directory already exists and you've chosen not to clone again"
-        fi
-    fi
-fi
+echo "Cloning OpenBazaar-Server"
+ clone_command
+    
+
+echo "Cloning OpenBazaar-Client"
+ clone_command_client        
 
 if [ -z "${dir}" ]; then
     dir="."
@@ -179,7 +68,7 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
-	npm install grunt-cli
+	
         npm install electron-packager
 
         echo 'Compiling node packages'
@@ -190,7 +79,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application'
         cd ../temp
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=0.33.9 --asar --icon=../windows/icon.ico --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=0.36.0 --asar --icon=../windows/icon.ico --overwrite
         cd ..
 
         echo 'Rename the folder'
@@ -203,6 +92,9 @@ case $OS in win32*)
 	if [ ! -f upx391w.zip ]; then
             wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
 	    unzip -j upx.zip
+        fi
+        if [ ! -f electron.zip ]; then
+            wget https://github.com/atom/electron/releases/download/v0.36.0/electron-v0.36.0-win32-ia32.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
         fi
 
         if [ ! -f python-2.7.11.msi ]; then
