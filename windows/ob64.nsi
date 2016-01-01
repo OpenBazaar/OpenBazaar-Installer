@@ -4,6 +4,7 @@
 ;Include Modern UI
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
+!include x64.nsh
 
 
 !addplugindir "$%AppData%"
@@ -363,10 +364,10 @@ Section ; Install Software
     ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts;c:\electron"'
 
     DetailPrint "Installing pynacl"
-	File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
-        Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
-        nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
-        DetailPrint "easy_install returned $0"
+	File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
+    	Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
+	nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
+	DetailPrint "easy_install returned $0"
 
 DetailPrint "Installing pyinstaller"
     ExecWait '"c:\python27\scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
