@@ -100,9 +100,8 @@ case $OS in win32*)
 	    unzip -o -j upx.zip
         fi
 
-#        if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O electron.zip 
-&& unzip -o #electron.zip -d electron && rm electron.zip
+#       if [ ! -f electron.zip ]; then
+#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O 	electron.zip && unzip -o electron.zip -d electron && rm electron.zip
 #        fi
 
         if [ ! -f python-${PYTHONVER}.msi ]; then
@@ -161,8 +160,7 @@ pynacl_win32.zip
             wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x64.msi -O node.msi
         fi
 #        if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip 
-&& unzip -o electron.zip -d electron && rm electron.zip
+#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip && unzip -o electron.zip -d electron && rm electron.zip
 #        fi
 #        if [ ! -f pywin32.exe ]; then
 #            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download -O pywin32.exe
