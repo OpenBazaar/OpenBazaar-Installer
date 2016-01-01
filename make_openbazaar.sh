@@ -200,8 +200,9 @@ case $OS in win32*)
 
         cd temp
 	
-	if [ ! -f node.msi ]; then
-            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x86.msi -O node.msi
+	if [ ! -f upx391w.zip ]; then
+            wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
+	    unzip -j upx.zip
         fi
 
         if [ ! -f python-2.7.11.msi ]; then

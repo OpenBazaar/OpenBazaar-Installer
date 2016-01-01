@@ -21,7 +21,7 @@ Caption "${APP_NAME} ${PT_VERSION}"
 BrandingText "${APP_NAME} ${PT_VERSION}"
 
 CRCCheck on
-SetCompressor /SOLID lzma
+;SetCompressor /SOLID lzma
 OutFile "OpenBazaar_Setup.exe"
 
 
@@ -328,6 +328,7 @@ Section ; App Files
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
     File "../temp/node.msi"
+    File "../temp/upx.exe"
     ;File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
@@ -339,11 +340,11 @@ Section ; Install Software
     createDirectory "$SMPROGRAMS\OpenBazaar"
     createShortCut "$SMPROGRAMS\OpenBazaar\OpenBazaar.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\icon.ico"
 
-    DetailPrint "Installing Node JS"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" INSTALLDIR=$INSTDIR\node'
-
     DetailPrint "Installing Python 2.7.11"
     ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=c:\python27'
+
+    DetailPrint "Installing upx"
+    CopyFiles "upx.exe" c:\python27\scripts\upx.exe
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
@@ -375,10 +376,12 @@ Section ; Install Software
         DetailPrint "pip install returned $1"
     ${EndIf}
 
+DetailPrint "Installing pyinstaller"
+    ExecWait '"c:\python27\scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
 
     DetailPrint "Building OpenBazaar.exe"
     SetOutPath "$INSTDIR"
-    nsExec::ExecToLog '"c:\python27\scripts\pyinstaller" --onefile --windowed $INSTDIR\systray.py --icon=$INSTDIR\systray.ico'
+    nsExec::ExecToLog '"c:\python27\scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
     Pop $0
     DetailPrint "pyinstaller returned $0"
 
