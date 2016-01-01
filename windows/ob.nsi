@@ -344,36 +344,36 @@ Section ; Install Software
     ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=c:\python27'
 
     DetailPrint "Installing upx"
-    CopyFiles "upx.exe" c:\python27\scripts\upx.exe
+    CopyFiles "upx.exe" c:\python27\Scripts\upx.exe
 
     DetailPrint "Installing Node JS"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" TARGETDIR=c:\nodejs'
+    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi"'
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
     DetailPrint "Installing Python modules"
-    nsExec::ExecToLog 'c:\python27\scripts\pip install -r "$INSTDIR\requirements.txt"'
+    nsExec::ExecToLog 'c:\python27\Scripts\pip install -r "$INSTDIR\requirements.txt"'
     Pop $0
     ${If} $0 = 0
       Pop $1
         DetailPrint "pip install returned $1"
     ${EndIf}
 
-    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts;c:\nodejs"'
+    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\Scripts"'
 
     DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
         Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
-        nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
+        nsExec::ExecToLog '"c:\python27\Scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
         DetailPrint "easy_install returned $0"
 
 DetailPrint "Installing pyinstaller"
-    ExecWait '"c:\python27\scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
+    ExecWait '"c:\python27\Scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
 
     DetailPrint "Building OpenBazaar.exe"
     SetOutPath "$INSTDIR"
-    nsExec::ExecToLog '"c:\python27\scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
+    nsExec::ExecToLog '"c:\python27\Scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
     Pop $0
     DetailPrint "pyinstaller returned $0"
 
