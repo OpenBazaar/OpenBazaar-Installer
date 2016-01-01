@@ -48,13 +48,15 @@ clone_command_client() {
     fi
 }
 
+if ! [ -d OpenBazaar-Server ]; then
+	echo "Cloning OpenBazaar-Server"
+	clone_command
+fi    
 
-echo "Cloning OpenBazaar-Server"
- clone_command
-    
-
-echo "Cloning OpenBazaar-Client"
- clone_command_client        
+if ! [ -d OpenBazaar-Client ]; then
+	echo "Cloning OpenBazaar-Client"
+	clone_command_client
+fi     
 
 if [ -z "${dir}" ]; then
     dir="."

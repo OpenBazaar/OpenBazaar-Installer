@@ -328,7 +328,7 @@ Section ; App Files
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
-    ;File "../temp/node.msi"
+    File "../temp/node.msi"
     File "../temp/upx.exe"
     ;File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
@@ -347,8 +347,8 @@ Section ; Install Software
     DetailPrint "Installing upx"
     CopyFiles "upx.exe" c:\python27\scripts\upx.exe
 
-;    DetailPrint "Installing electron"
-;    CopyFiles "electron" c:\electron
+    DetailPrint "Installing Node JS"
+    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi" TARGETDIR=c:\nodejs'
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
@@ -361,7 +361,7 @@ Section ; Install Software
         DetailPrint "pip install returned $1"
     ${EndIf}
 
-    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts;c:\electron"'
+    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts;c:\nodejs"'
 
     DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
