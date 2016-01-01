@@ -97,7 +97,7 @@ case $OS in win32*)
 	
 	if [ ! -f upx${UPXVER}w.zip ]; then
             wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -j upx.zip
+	    unzip -o -j upx.zip
         fi
 
 #        if [ ! -f electron.zip ]; then
@@ -148,7 +148,7 @@ case $OS in win32*)
 	
 	if [ ! -f upx${UPXVER}w.zip ]; then
             wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -j upx.zip
+	    unzip -o -j upx.zip
         fi
 
         if [ ! -f python-${PYTHONVER}.msi ]; then
