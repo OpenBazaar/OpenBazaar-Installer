@@ -12,6 +12,10 @@
 ## Optionally, you can also pass in a specific branch to build or clone, by making url contain a branch specifier
 ## ./make_openbazaar.sh '-b release/0.3.4 https://github.com/OpenBazaar/OpenBazaar.git'
 ##
+ELECTRONVER=0.36.2
+NODEJSVER=5.3.0
+PYTHONVER=2.7.11
+UPXVER=391
 
 OS="${1}"
 
@@ -79,7 +83,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application'
         cd ../temp
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=0.36.0 --asar --icon=../windows/icon.ico --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
         cd ..
 
         echo 'Rename the folder'
@@ -89,17 +93,21 @@ case $OS in win32*)
 
         cd temp
 	
-	if [ ! -f upx391w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
+	if [ ! -f upx${UPXVER}w.zip ]; then
+            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
 	    unzip -j upx.zip
         fi
 
 #        if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v0.36.2/electron-v0.36.2-win32-ia32.zip -O electron.zip && unzip #electron.zip -d electron && rm electron.zip
+#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O electron.zip && unzip #electron.zip -d electron && rm electron.zip
 #        fi
 
-        if [ ! -f python-2.7.11.msi ]; then
-            wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.msi -O python-2.7.11.msi
+        if [ ! -f python-${PYTHONVER}.msi ]; then
+            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.msi -O python-${PYTHONVER}.msi
+        fi
+
+	if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x86.msi -O node.msi
         fi
 
         if [ ! -f vcredist.exe ]; then
@@ -127,7 +135,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application'
         cd ../temp
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=0.36.2 --asar --icon=../windows/icon.ico --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
         cd ..
 
         echo 'Rename the folder'
@@ -136,20 +144,20 @@ case $OS in win32*)
         echo 'Downloading installers'
         cd temp/
 	
-	if [ ! -f upx391w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
+	if [ ! -f upx${UPXVER}w.zip ]; then
+            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
 	    unzip -j upx.zip
         fi
 
-        if [ ! -f python-2.7.11.msi ]; then
-            wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.amd64.msi -O python-2.7.11.msi
+        if [ ! -f python-${PYTHONVER}.msi ]; then
+            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.amd64.msi -O python-${PYTHONVER}.msi
         fi
         
-#	if [ ! -f node.msi ]; then
-#            wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
-#        fi
+	if [ ! -f node.msi ]; then
+            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x64.msi -O node.msi
+        fi
 #        if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
+#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
 #        fi
 #        if [ ! -f pywin32.exe ]; then
 #            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download -O pywin32.exe
@@ -185,7 +193,7 @@ case $OS in win32*)
         cd ..
 
         # Build Client
-        electron-packager ./build/OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=0.36.1 --out=temp/ --overwrite
+        electron-packager ./build/OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=${ELECTRONVER} --out=temp/ --overwrite
         npm i electron-installer-dmg -g
         electron-installer-dmg ./temp/OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./temp/OpenBazaar-darwin-x64/ --overwrite --background=./osx/finder_background.png --debug
         ;;
@@ -218,7 +226,7 @@ case $OS in win32*)
 	    npm install
 	    cd ..
 
-        electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=0.36.2 --out=temp/ --overwrite
+        electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --out=temp/ --overwrite
 
         # Package into debian format
         grunt
