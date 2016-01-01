@@ -107,7 +107,6 @@ case $OS in win32*)
 
         if [ ! -f pynacl ]; then
             wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip pynacl_win32.zip && rm pynacl_win32.zip
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip pynacl_win64.zip && rm pynacl_win64.zip
         fi
 
         cd ..
@@ -153,7 +152,6 @@ case $OS in win32*)
             wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe -O vcredist.exe
         fi
         if [ ! -f pynacl.zip ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip pynacl_win32.zip && rm pynacl_win32.zip
             wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip pynacl_win64.zip && rm pynacl_win64.zip
         fi
 

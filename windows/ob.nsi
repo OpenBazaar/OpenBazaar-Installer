@@ -347,16 +347,14 @@ Section ; Install Software
     DetailPrint "Installing upx"
     CopyFiles "upx.exe" c:\python27\scripts\upx.exe
 
-;    DetailPrint "Installing upx"
+;    DetailPrint "Installing electron"
 ;    CopyFiles "electron" c:\electron
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
-    DetailPrint "Installing required Python modules"
-    ExecWait '"c:\python27\scripts\pip.exe" install 
     DetailPrint "Installing Python modules"
-    nsExec::ExecToLog 'c:\python27\scripts\pip install -r "requirements.txt"'
+    nsExec::ExecToLog 'c:\python27\scripts\pip install -r "$INSTDIR\requirements.txt"'
     Pop $0
     ${If} $0 = 0
       Pop $1
@@ -388,6 +386,7 @@ DetailPrint "Installing pyinstaller"
     DetailPrint "pyinstaller returned $0"
 
     Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
+    CopyFiles "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
 
 
 SectionEnd
