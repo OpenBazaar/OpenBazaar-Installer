@@ -93,9 +93,10 @@ case $OS in win32*)
             wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
 	    unzip -j upx.zip
         fi
-        if [ ! -f electron.zip ]; then
-            wget https://github.com/atom/electron/releases/download/v0.36.0/electron-v0.36.0-win32-ia32.zip -O electron.zip && unzip electron.zip -d electron && rm electron.zip
-        fi
+
+#        if [ ! -f electron.zip ]; then
+#            wget https://github.com/atom/electron/releases/download/v0.36.2/electron-v0.36.2-win32-ia32.zip -O electron.zip && unzip #electron.zip -d electron && rm electron.zip
+#        fi
 
         if [ ! -f python-2.7.11.msi ]; then
             wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.msi -O python-2.7.11.msi
@@ -116,7 +117,6 @@ case $OS in win32*)
     win64*)
         export OB_OS=win64
 
-       	npm install grunt-cli
         npm install electron-packager
 
         echo 'Compiling node packages'
@@ -127,7 +127,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application'
         cd ../temp
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=0.33.9 --asar --icon=../windows/icon.ico --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=0.36.2 --asar --icon=../windows/icon.ico --overwrite
         cd ..
 
         echo 'Rename the folder'
@@ -135,11 +135,17 @@ case $OS in win32*)
 
         echo 'Downloading installers'
         cd temp/
-
-        if [ ! -f python-2.7.10.msi ]; then
-            wget https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi -O python-2.7.10.msi
+	
+	if [ ! -f upx391w.zip ]; then
+            wget http://upx.sourceforge.net/download/upx391w.zip -O upx.zip
+	    unzip -j upx.zip
         fi
-        if [ ! -f node.msi ]; then
+
+        if [ ! -f python-2.7.11.msi ]; then
+            wget https://www.python.org/ftp/python/2.7.11/python-2.7.11.amd64.msi -O python-2.7.11.msi
+        fi
+        
+	if [ ! -f node.msi ]; then
             wget https://nodejs.org/download/release/v4.1.2/node-v4.1.2-x64.msi -O node.msi
         fi
 #        if [ ! -f electron.zip ]; then
@@ -157,7 +163,7 @@ case $OS in win32*)
 
         cd ..
 
-        makensis ./windows/ob.nsi
+        makensis windows/ob.nsi
         ;;
 
     osx*)
@@ -212,7 +218,7 @@ case $OS in win32*)
 	    npm install
 	    cd ..
 
-        electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=0.36.1 --out=temp/ --overwrite
+        electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=0.36.2 --out=temp/ --overwrite
 
         # Package into debian format
         grunt
