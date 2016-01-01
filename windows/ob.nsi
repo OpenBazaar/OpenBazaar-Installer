@@ -323,13 +323,14 @@ Section ; App Files
     File /r "systray.ico"
     File /r "install.ps1"
     File /r "systray.py"
+    File /r "requirements.txt"	
 
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
     ;File "../temp/node.msi"
     File "../temp/upx.exe"
-    File /r "../temp/electron"
+    ;File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
 SectionEnd
@@ -346,13 +347,23 @@ Section ; Install Software
     DetailPrint "Installing upx"
     CopyFiles "upx.exe" c:\python27\scripts\upx.exe
 
+;    DetailPrint "Installing upx"
+;    CopyFiles "electron" c:\electron
+
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
-    DetailPrint "Installing pynacl"
-    ExecWait '"c:\python27\scripts\pip.exe" install cffi six google-apputils psutil pystun requests autobahn protobuf bitcoin'
+    DetailPrint "Installing required Python modules"
+    ExecWait '"c:\python27\scripts\pip.exe" install 
+    DetailPrint "Installing Python modules"
+    nsExec::ExecToLog 'c:\python27\scripts\pip install -r "requirements.txt"'
+    Pop $0
+    ${If} $0 = 0
+      Pop $1
+        DetailPrint "pip install returned $1"
+    ${EndIf}
 
-    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts"'
+    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\scripts;c:\electron"'
 
     DetailPrint "Installing pynacl"
     ${If} ${RunningX64}
@@ -365,15 +376,6 @@ Section ; Install Software
         Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
         nsExec::ExecToLog '"c:\python27\scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
         DetailPrint "easy_install returned $0"
-    ${EndIf}
-
-    DetailPrint "Installing Python modules"
-    SetOutPath "$INSTDIR\OpenBazaar-Server"
-    nsExec::ExecToLog 'c:\python27\scripts\pip install -r requirements.txt'
-    Pop $0
-    ${If} $0 = 0
-        Pop $1
-        DetailPrint "pip install returned $1"
     ${EndIf}
 
 DetailPrint "Installing pyinstaller"
