@@ -361,8 +361,10 @@ Section ; Install Software
     ${EndIf}
 
     ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\Scripts"'
-
-    DetailPrint "Installing pynacl"
+    ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
+    ExecWait '"setx" PYTHONHOME "C:\python27"'
+    
+DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
         Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
         nsExec::ExecToLog '"c:\python27\Scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'

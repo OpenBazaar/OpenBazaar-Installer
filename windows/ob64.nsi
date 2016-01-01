@@ -362,6 +362,8 @@ Section ; Install Software
     ${EndIf}
 
     ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\Scripts"'
+    ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
+    ExecWait '"setx" PYTHONHOME "C:\python27"'
 
     DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
