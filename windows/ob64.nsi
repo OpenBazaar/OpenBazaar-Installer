@@ -328,9 +328,9 @@ Section ; App Files
     SetOutPath "${TEMP_DIR}"
     File "../temp/python-2.7.11.msi"
     File "../temp/vcredist.exe"
-    File "../temp/node.msi"
+;    File "../temp/node.msi"
     File "../temp/upx.exe"
-    ;File /r "../temp/electron"
+    File /r "../temp/electron"
     ;File "../temp/pywin32.exe"
 
 SectionEnd
@@ -342,46 +342,49 @@ Section ; Install Software
     createShortCut "$SMPROGRAMS\OpenBazaar\OpenBazaar.lnk" "$INSTDIR\OpenBazaar.exe" "" "$INSTDIR\icon.ico"
 
     DetailPrint "Installing Python 2.7.11"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=c:\python27'
+    ExecWait '"$SYSDIR\msiExec" /qn /i "python-2.7.11.msi" TARGETDIR=C:\python27'
 
     DetailPrint "Installing upx"
-    CopyFiles "upx.exe" c:\python27\Scripts\upx.exe
+    CopyFiles "upx.exe" C:\python27\Scripts\upx.exe
 
-    DetailPrint "Installing Node JS"
-    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi"'
+;    DetailPrint "Installing Node JS"
+;    ExecWait '"$SYSDIR\msiExec" /qn /i "node.msi"'
+
+    DetailPrint "Installing Electron"
+    Rename "electron" "C:\electron"
 
     DetailPrint "Installing Visual C++ Redistributable"
     ExecWait '"vcredist.exe" /passive /quiet /norestart'
 
     DetailPrint "Installing Python modules"
-    nsExec::ExecToLog 'c:\python27\Scripts\pip install -r "$INSTDIR\requirements.txt"'
+    nsExec::ExecToLog 'C:\python27\Scripts\pip install -r "$INSTDIR\requirements.txt"'
     Pop $0
     ${If} $0 = 0
       Pop $1
         DetailPrint "pip install returned $1"
     ${EndIf}
 
-    ExecWait '"setx" PATH "%PATH%;C:\python27;c:\python27\Scripts"'
+    ExecWait '"setx" PATH "%PATH%;C:\python27;C:\python27\Scripts;C:\electron"'
     ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
     ExecWait '"setx" PYTHONHOME "C:\python27"'
 
     DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
-    	Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
-	nsExec::ExecToLog '"c:\python27\Scripts\easy_install.exe" c:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
+    	Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
+	nsExec::ExecToLog '"C:\python27\Scripts\easy_install.exe" C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
 	DetailPrint "easy_install returned $0"
 
 DetailPrint "Installing pyinstaller"
-    ExecWait '"c:\python27\Scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
+    ExecWait '"C:\python27\Scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
 
     DetailPrint "Building OpenBazaar.exe"
     SetOutPath "$INSTDIR"
-    nsExec::ExecToLog '"c:\python27\Scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
+    nsExeC::ExecToLog '"C:\python27\Scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
     Pop $0
     DetailPrint "pyinstaller returned $0"
 
     Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
-    CopyFiles "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
+    Rename "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
 
 
 SectionEnd

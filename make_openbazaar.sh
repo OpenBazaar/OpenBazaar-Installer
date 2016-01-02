@@ -80,8 +80,7 @@ case $OS in win32*)
         echo 'Compiling node packages'
         cd OpenBazaar-Client
         npm install
-        npm install flatten-packages
-        node_modules/.bin/flatten-packages
+	npm install asser-plus
 
         echo 'Packaging Electron application'
         cd ../temp
@@ -100,25 +99,24 @@ case $OS in win32*)
 	    unzip -o -j upx.zip
         fi
 
-#       if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O 	electron.zip && unzip -o electron.zip -d electron && rm electron.zip
-#        fi
+        if [ ! -f electron.zip ]; then
+            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O 	electron.zip && unzip -o electron.zip -d electron && rm electron.zip
+        fi
 
         if [ ! -f python-${PYTHONVER}.msi ]; then
             wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.msi -O python-${PYTHONVER}.msi
         fi
 
-	if [ ! -f node.msi ]; then
-            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x86.msi -O node.msi
-        fi
+#	if [ ! -f node.msi ]; then
+#            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x86.msi -O node.msi
+#        fi
 
         if [ ! -f vcredist.exe ]; then
             wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
         fi
 
         if [ ! -f pynacl ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip -o pynacl_win32.zip && rm 
-pynacl_win32.zip
+            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip -o pynacl_win32.zip && rm pynacl_win32.zip
         fi
 
         cd ..
@@ -133,9 +131,8 @@ pynacl_win32.zip
         echo 'Compiling node packages'
         cd OpenBazaar-Client
         npm install
-        npm install flatten-packages
-        node_modules/.bin/flatten-packages
-
+        npm install assert-plus
+	
         echo 'Packaging Electron application'
         cd ../temp
         ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
@@ -156,12 +153,13 @@ pynacl_win32.zip
             wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.amd64.msi -O python-${PYTHONVER}.msi
         fi
         
-	if [ ! -f node.msi ]; then
-            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x64.msi -O node.msi
-        fi
-#        if [ ! -f electron.zip ]; then
-#            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip && unzip -o electron.zip -d electron && rm electron.zip
+#	if [ ! -f node.msi ]; then
+#            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x64.msi -O node.msi
 #        fi
+
+        if [ ! -f electron.zip ]; then
+            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip && unzip -o electron.zip -d electron && rm electron.zip
+        fi
 #        if [ ! -f pywin32.exe ]; then
 #            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download -O pywin32.exe
 #        fi
@@ -169,8 +167,7 @@ pynacl_win32.zip
             wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe -O vcredist.exe
         fi
         if [ ! -f pynacl.zip ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip -o pynacl_win64.zip && rm 
-pynacl_win64.zip
+            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip -o pynacl_win64.zip && rm pynacl_win64.zip
         fi
 
         cd ..
