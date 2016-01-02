@@ -99,17 +99,9 @@ case $OS in win32*)
 	    unzip -o -j upx.zip
         fi
 
-        if [ ! -f electron.zip ]; then
-            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-ia32.zip -O 	electron.zip && unzip -o electron.zip -d electron && rm electron.zip
-        fi
-
         if [ ! -f python-${PYTHONVER}.msi ]; then
             wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.msi -O python-${PYTHONVER}.msi
         fi
-
-#	if [ ! -f node.msi ]; then
-#            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x86.msi -O node.msi
-#        fi
 
         if [ ! -f vcredist.exe ]; then
             wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
@@ -153,13 +145,6 @@ case $OS in win32*)
             wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.amd64.msi -O python-${PYTHONVER}.msi
         fi
         
-#	if [ ! -f node.msi ]; then
-#            wget https://nodejs.org/download/release/v${NODEJSVER}/node-v${NODEJSVER}-x64.msi -O node.msi
-#        fi
-
-        if [ ! -f electron.zip ]; then
-            wget https://github.com/atom/electron/releases/download/v${ELECTRONVER}/electron-v${ELECTRONVER}-win32-x64.zip -O electron.zip && unzip -o electron.zip -d electron && rm electron.zip
-        fi
 #        if [ ! -f pywin32.exe ]; then
 #            wget http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download -O pywin32.exe
 #        fi
