@@ -89,6 +89,7 @@ case $OS in win32*)
 
         echo 'Rename the folder'
         mv temp/OpenBazaar_Client-win32-ia32 temp/OpenBazaar-Client
+	rm -rf temp/OpenBazaar-Client/OpenBazaar_Client-win32-ia32
 
         echo 'Downloading installers'
 
@@ -132,6 +133,7 @@ case $OS in win32*)
 
         echo 'Rename the folder'
         mv temp/OpenBazaar_Client-win32-x64 temp/OpenBazaar-Client
+	rm -rf temp/OpenBazaar-Client/OpenBazaar_Client-win32-x64
 
         echo 'Downloading installers'
         cd temp/

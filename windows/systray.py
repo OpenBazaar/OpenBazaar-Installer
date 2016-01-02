@@ -229,7 +229,7 @@ if __name__ == '__main__':
     hover_text = "OpenBazaar"
 
     server = subprocess.Popen(['python', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
-    client = subprocess.Popen(['electron', 'start'], shell=True, cwd='OpenBazaar-Client')
+    client = subprocess.Popen(['OpenBazaar_Client.exe'], cwd='OpenBazaar-Client')
 
     def kill(proc_pid):
         process = psutil.Process(proc_pid)

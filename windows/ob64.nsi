@@ -376,8 +376,7 @@ DetailPrint "Installing pyinstaller"
     DetailPrint "pyinstaller returned $0"
 
     Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
-    Rename "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
-
+    CopyFiles "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
 
 SectionEnd
 
