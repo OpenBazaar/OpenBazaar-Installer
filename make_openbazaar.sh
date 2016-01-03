@@ -21,7 +21,7 @@ OS="${1}"
 
 # Check if user specified repository to pull code from
 clone_repo="True"
-clone_url_server="https://github.com/OpenBazaar/OpenBazaar-Server.git"
+clone_url_server="https://github.com/M0Rf30/OpenBazaar-Server.git"
 clone_url_client="https://github.com/OpenBazaar/OpenBazaar-Client.git"
 
 command_exists () {
