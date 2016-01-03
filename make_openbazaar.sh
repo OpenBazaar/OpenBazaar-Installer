@@ -51,6 +51,11 @@ clone_command_client() {
 if ! [ -d OpenBazaar-Client ]; then
 	echo "Cloning OpenBazaar-Client"
 	clone_command_client
+else
+        cd OpenBazaar-Client
+        git pull
+        cd .. 
+
 fi     
 
 if [ -z "${dir}" ]; then
@@ -73,6 +78,10 @@ case $OS in win32*)
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
 		clone_command 
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd .. 
 	fi    
 	
         npm install electron-packager
@@ -122,6 +131,10 @@ case $OS in win32*)
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
 		clone_command
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..     
 	fi    
 
         npm install electron-packager
@@ -173,6 +186,10 @@ case $OS in win32*)
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
 		clone_command 
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..  
 	fi    
 
         # Set up build directories
@@ -203,7 +220,12 @@ case $OS in win32*)
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
 		clone_command 
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..     
 	fi    
+   
         # Set up build directories
         cp -rf OpenBazaar-Client build/
         mkdir OpenBazaar-Client/OpenBazaar-Server
