@@ -361,7 +361,7 @@ Section ; Install Software
         ExecWait '"setx" PYTHONHOME "C:\python27"'
 
     DetailPrint "Adding firewall rule for Python"
-        ExexWait '"netsh" advfirewall firewall add rule name="Python" dir=in action=allow program="C:\python27\python.exe" enable=yes'
+        ExecWait '"netsh" advfirewall firewall add rule name="Python" dir=in action=allow program="C:\python27\python.exe" enable=yes'
     
 DetailPrint "Installing pynacl"
 	File /r "../temp/PyNaCl-0.3.0-py2.7-win32.egg"
