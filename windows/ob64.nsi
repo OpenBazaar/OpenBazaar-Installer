@@ -356,7 +356,7 @@ Section ; Install Software
         DetailPrint "pip install returned $1"
     ${EndIf}
 
-    DetailPrint "Adding Python bin to PATH""
+    DetailPrint "Adding Python bin to PATH"
 	ExecWait '"setx" PATH "%PATH%;C:\python27;C:\python27\Scripts"'
 	ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
 	ExecWait '"setx" PYTHONHOME "C:\python27"'
