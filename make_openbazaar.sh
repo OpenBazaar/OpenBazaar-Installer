@@ -20,8 +20,8 @@ UPXVER=391
 OS="${1}"
 
 # Check if user specified repository to pull code from
-clone_repo="True"
-clone_url_server="https://github.com/M0Rf30/OpenBazaar-Server.git"
+
+clone_url_server="https://github.com/OpenBazaar/OpenBazaar-Server.git"
 clone_url_client="https://github.com/OpenBazaar/OpenBazaar-Client.git"
 
 command_exists () {
@@ -31,7 +31,7 @@ command_exists () {
 }
 
 clone_command() {
-    if git clone ${clone_url_server} ${dir}; then
+    if git clone ${clone_url_server} -b ${branch}; then
         echo "Cloned OpenBazaar Server successfully"
     else
         echo "OpenBazaar encountered an error and could not be cloned"
@@ -40,18 +40,13 @@ clone_command() {
 }
 
 clone_command_client() {
-    if git clone ${clone_url_client} ${dir}; then
+    if git clone ${clone_url_client}; then
         echo "Cloned OpenBazaar Client successfully"
     else
         echo "OpenBazaar encountered an error and could not be cloned"
         exit 2
     fi
 }
-
-if ! [ -d OpenBazaar-Server ]; then
-	echo "Cloning OpenBazaar-Server"
-	clone_command
-fi    
 
 if ! [ -d OpenBazaar-Client ]; then
 	echo "Cloning OpenBazaar-Client"
@@ -74,13 +69,18 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
+	branch=noupnp
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command 
+	fi    
 	
         npm install electron-packager
 
         echo 'Compiling node packages'
         cd OpenBazaar-Client
         npm install
-	npm install asser-plus
+	npm install assert-plus
 
         echo 'Packaging Electron application'
         cd ../temp
@@ -118,6 +118,11 @@ case $OS in win32*)
         ;;
     win64*)
         export OB_OS=win64
+	branch=noupnp
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command
+	fi    
 
         npm install electron-packager
 
@@ -164,6 +169,11 @@ case $OS in win32*)
 
     osx*)
         echo 'Building OS X binary'
+	branch=master
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command 
+	fi    
 
         # Set up build directories
         cp -rf OpenBazaar-Client build/
@@ -189,7 +199,11 @@ case $OS in win32*)
     linux*)
 
         echo 'Building Linux binary'
-
+	branch=master
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command 
+	fi    
         # Set up build directories
         cp -rf OpenBazaar-Client build/
         mkdir OpenBazaar-Client/OpenBazaar-Server
