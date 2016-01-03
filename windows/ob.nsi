@@ -20,7 +20,7 @@ Caption "${APP_NAME} ${PT_VERSION}"
 BrandingText "${APP_NAME} ${PT_VERSION}"
 
 CRCCheck on
-;SetCompressor /SOLID lzma
+SetCompressor /SOLID lzma
 OutFile "OpenBazaar_Setup.exe"
 
 
