@@ -364,7 +364,7 @@ Section ; Install Software
     	ExecWait '"netsh" advfirewall firewall add rule name="Python" dir=in action=allow program="C:\python27\python.exe" enable=yes'
 
     DetailPrint "Installing pynacl"
-	File /r "../temp/PyNaCl-0.3.0-py2.7-win-amd64.egg"
+	File /r "../temp-win64/PyNaCl-0.3.0-py2.7-win-amd64.egg"
     	Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
 	nsExec::ExecToLog '"C:\python27\Scripts\easy_install.exe" C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
 	DetailPrint "easy_install returned $0"
