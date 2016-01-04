@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 
 ## Version 0.1.0
 ##
@@ -330,7 +330,7 @@ case $OS in win32*)
         source env/bin/activate
         pip install -r requirements.txt
         pip install pyinstaller==3.0
-        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
+        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard ../openbazaard.mac.spec
         cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
         cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
         cd ..
