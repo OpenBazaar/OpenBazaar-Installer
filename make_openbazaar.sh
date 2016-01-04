@@ -1,4 +1,4 @@
-﻿﻿#!/bin/sh
+﻿#!/bin/sh
 
 ## Version 0.1.0
 ##
