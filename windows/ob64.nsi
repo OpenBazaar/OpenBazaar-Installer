@@ -316,7 +316,7 @@ Section ; App Files
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
     SetOutPath "$INSTDIR"
-    File /r "../temp/OpenBazaar-Client"
+    File /r "../temp-win64/OpenBazaar-Client"
     File /r "../OpenBazaar-Server"
     File /r "OpenBazaar.ps1"
     File /r "icon.ico"
@@ -326,10 +326,9 @@ Section ; App Files
     File /r "requirements.txt"	
 
     SetOutPath "${TEMP_DIR}"
-    File "../temp/python-2.7.11.msi"
-    File "../temp/vcredist.exe"
-    File "../temp/upx.exe"
-    ;File "../temp/pywin32.exe"
+    File "../temp-win64/python-2.7.11.msi"
+    File "../temp-win64/vcredist.exe"
+    File "../temp-win64/upx.exe"
 
 SectionEnd
 
