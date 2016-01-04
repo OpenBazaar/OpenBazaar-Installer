@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['openbazaard.py'],
+a = Analysis(['./OpenBazaar-Server/openbazaard.py'],
              pathex=['./OpenBazaar-Server'],
              binaries=None,
              datas=None,
