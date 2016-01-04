@@ -182,35 +182,42 @@ case $OS in win32*)
 
     osx*)
         echo 'Building OS X binary'
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
+		if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
 		clone_command 
 	else
         	cd OpenBazaar-Server
         	git pull
-	        cd ..  
+	        cd ..     
 	fi    
+   
+	npm install electron-packager
+	npm install electron-installer-dmg
 
-        # Set up build directories
-        cp -rf OpenBazaar-Client build/
-        mkdir OpenBazaar-Client/OpenBazaar-Server
+        echo 'Compiling node packages'
+        cd OpenBazaar-Client
+        npm install
 
-        # Build OpenBazaar-Server Binary
-        cd OpenBazaar-Server
-        virtualenv env
-        source env/bin/activate
-        pip install -r requirements.txt
-        pip install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
-        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
-        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
-        cd ..
+	echo 'Packaging Electron application'
+        cd ../temp
+	../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-installer-dmg ./temp/OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./temp/OpenBazaar-darwin-x64/ --overwrite --background=./osx/finder_background.png --debug
+        
+#	# Set up build directories
+#        cp -rf OpenBazaar-Client build/
+#        mkdir OpenBazaar-Client/OpenBazaar-Server
 
-        # Build Client
-        electron-packager ./build/OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=${ELECTRONVER} --out=temp/ --overwrite
-        npm i electron-installer-dmg -g
-        electron-installer-dmg ./temp/OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./temp/OpenBazaar-darwin-x64/ --overwrite --background=./osx/finder_background.png --debug
+#        # Build OpenBazaar-Server Binary
+#        cd OpenBazaar-Server
+#        virtualenv env
+#        source env/bin/activate
+#        pip install -r requirements.txt
+#        pip install git+https://github.com/pyinstaller/pyinstaller.git
+#        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
+#        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
+#        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
+#        cd ..
+
         ;;
 
     linux*)
@@ -226,32 +233,29 @@ case $OS in win32*)
 	        cd ..     
 	fi    
    
-        # Set up build directories
-        cp -rf OpenBazaar-Client build/
-        mkdir OpenBazaar-Client/OpenBazaar-Server
+	npm install electron-packager
 
-        # Build OpenBazaar-Server Binary
-        cd OpenBazaar-Server
-        virtualenv2 env
-        source env/bin/activate
-        pip2 install -r requirements.txt
-        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard openbazaard.py
-        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
-        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
-        cd ..
+        echo 'Compiling node packages'
+        cd OpenBazaar-Client
+        npm install
 
+	echo 'Packaging Electron application'
+        cd ../temp
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
 
-	    npm install electron-packager
-	    npm install grunt-cli
-            npm install grunt-electron-debian-installer --save-dev
+#        # Set up build directories
+#        cp -rf OpenBazaar-Client build/
+#        mkdir OpenBazaar-Client/OpenBazaar-Server
 
-	    cd OpenBazaar-Client/
-	    npm install
-	    cd ..
+#        # Build OpenBazaar-Server Binary
+#        cd OpenBazaar-Server
+#        virtualenv2 env
+#        source env/bin/activate
+#        pip2 install -r requirements.txt
+#        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
+#        env/bin/pyinstaller -F -n openbazaard openbazaard.py
+#        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
+#        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
+#        cd ..
 
-        electron-packager ./build/OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --out=temp/ --overwrite
-
-        # Package into debian format
-        grunt
 esac
