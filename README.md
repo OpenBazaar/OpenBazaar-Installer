@@ -9,7 +9,7 @@ This creation script has only been tested running on OS X Yosemite.
 
 ## Linux
 
-sh make_openbazaar.sh linux
+./make_openbazaar.sh linux
 
 ## Windows
 
@@ -22,4 +22,4 @@ Remember to clear out the temp/ folder before building a different architecture
 
 ## OSX
 
-sh make_openbazaar.sh osx
+./make_openbazaar.sh osx
