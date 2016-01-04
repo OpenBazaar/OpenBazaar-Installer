@@ -68,6 +68,9 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
 
 	if ! [ -d temp-$OS ]; then
 		mkdir -p temp-$OS
@@ -123,9 +126,16 @@ case $OS in win32*)
         cd ..
 
         makensis windows/ob.nsi
+	mkdir build-$OS
+	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
+
         ;;
     win64*)
         export OB_OS=win64
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+
 	if ! [ -d temp-$OS ]; then
 		mkdir -p temp-$OS
 	fi
@@ -178,11 +188,17 @@ case $OS in win32*)
         cd ..
 
         makensis windows/ob64.nsi
+	mkdir build-$OS
+	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
         ;;
 
     osx*)
 
         echo 'Building OS X binary'
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+	
 	if ! [ -d temp-$OS ]; then
 		mkdir -p temp-$OS
 	fi
@@ -206,28 +222,35 @@ case $OS in win32*)
 	echo 'Packaging Electron application'
         cd ../temp-$OS
 	../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=${ELECTRONVER} --overwrite
-        ../node_modules/.bin/electron-installer-dmg ./temp-$OS/OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./temp-$OS/OpenBazaar-darwin-x64/ --overwrite --background=./osx/finder_background.png --debug
-        
-#	# Set up build directories
-#        cp -rf OpenBazaar-Client build/
-#        mkdir OpenBazaar-Client/OpenBazaar-Server
+#        ../node_modules/.bin/electron-installer-dmg ../OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ../osx/tent.icns --out=../OpenBazaar-darwin-x64/ --overwrite --background=../osx/finder_background.png --debug
 
-#        # Build OpenBazaar-Server Binary
-#        cd OpenBazaar-Server
-#        virtualenv env
-#        source env/bin/activate
-#        pip install -r requirements.txt
-#        pip install git+https://github.com/pyinstaller/pyinstaller.git
-#        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
-#        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
-#        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
-#        cd ..
+        cd .. 
+	echo 'Rename the folder'
+        mv temp-$OS/OpenBazaar_Client-darwin-x64 build-$OS/
+	rm -rf build-$OS//OpenBazaar_Client-darwin-x64   
+    
+	# Set up build directories
+        mkdir build-$OS/OpenBazaar-Server
+
+        # Build OpenBazaar-Server Binary
+        cd OpenBazaar-Server
+        virtualenv env
+        source env/bin/activate
+        pip install -r requirements.txt
+        pip install git+https://github.com/pyinstaller/pyinstaller.git
+        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
+        cp dist/openbazaard ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
 
         ;;
 
-    linux*)
+    linux32*)
 
         echo 'Building Linux binary'
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+
 	if ! [ -d temp-$OS ]; then
 		mkdir -p temp-$OS
 	fi
@@ -250,21 +273,69 @@ case $OS in win32*)
 
 	echo 'Packaging Electron application'
         cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux32 --arch=all --version=${ELECTRONVER} --overwrite
 
-#        # Set up build directories
-#        cp -rf OpenBazaar-Client build/
-#        mkdir OpenBazaar-Client/OpenBazaar-Server
+         cd ..
+        # Set up build directories
+        cp -rf OpenBazaar-Client build-$OS
+        mkdir build-$OS/OpenBazaar-Server
 
-#        # Build OpenBazaar-Server Binary
-#        cd OpenBazaar-Server
-#        virtualenv2 env
-#        source env/bin/activate
-#        pip2 install -r requirements.txt
-#        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
-#        env/bin/pyinstaller -F -n openbazaard openbazaard.py
-#        cp dist/openbazaard ../OpenBazaar-Client/OpenBazaar-Server
-#        cp ob.cfg ../OpenBazaar-Client/OpenBazaar-Server
-#        cd ..
+        # Build OpenBazaar-Server Binary
+        cd OpenBazaar-Server
+        virtualenv2 env
+        source env/bin/activate
+        pip2 install -r requirements.txt
+        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
+        env/bin/pyinstaller -F -n openbazaard openbazaard.py
+        cp dist/openbazaard ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
+	echo "Build done in build-$OS"
+	;;
+    linux64*)
+
+        echo 'Building Linux binary'
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
+	branch=master
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command 
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..     
+	fi    
+   
+	npm install electron-packager
+
+        echo 'Compiling node packages'
+        cd OpenBazaar-Client
+        npm install
+
+	echo 'Packaging Electron application'
+        cd ../temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux64 --arch=all --version=${ELECTRONVER} --overwrite
+
+         cd ..
+        # Set up build directories
+        cp -rf OpenBazaar-Client build-$OS
+        mkdir build-$OS/OpenBazaar-Server
+
+        # Build OpenBazaar-Server Binary
+        cd OpenBazaar-Server
+        virtualenv2 env
+        source env/bin/activate
+        pip2 install -r requirements.txt
+        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
+        env/bin/pyinstaller -F -n openbazaard openbazaard.py
+        cp dist/openbazaard ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
+	echo "Build done in build-$OS"
 
 esac

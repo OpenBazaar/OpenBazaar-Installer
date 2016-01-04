@@ -21,7 +21,7 @@ BrandingText "${APP_NAME} ${PT_VERSION}"
 
 CRCCheck on
 SetCompressor /SOLID lzma
-OutFile "OpenBazaar_Setup.exe"
+OutFile "OpenBazaar_Setup_win32.exe"
 
 
 ;Default installation folder
