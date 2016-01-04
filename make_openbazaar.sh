@@ -61,9 +61,6 @@ fi
 cd ${dir}
 echo "Switched to ${PWD}"
 
-# Check for temp-$OS folder and create if does not exist
-mkdir -p temp-$OS
-
 command_exists grunt
 command_exists npm
 command_exists wine
@@ -71,7 +68,11 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
-	mkdir -p temp-$OS
+
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
 	branch=noupnp
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
@@ -125,7 +126,10 @@ case $OS in win32*)
         ;;
     win64*)
         export OB_OS=win64
-	mkdir -p temp-$OS
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
 	branch=noupnp
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
@@ -179,7 +183,10 @@ case $OS in win32*)
     osx*)
 
         echo 'Building OS X binary'
-	mkdir -p temp-$OS
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
 	branch=master
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
@@ -221,7 +228,10 @@ case $OS in win32*)
     linux*)
 
         echo 'Building Linux binary'
-	mkdir -p temp-$OS
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
 	branch=master
 	if ! [ -d OpenBazaar-Server ]; then
 		echo "Cloning OpenBazaar-Server"
