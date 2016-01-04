@@ -5,7 +5,7 @@ The goal here is to have a 1-step build process.
 
 This repository is not to install the software, but to BUILD the installer itself. We will make downloadable installer executables available at https://openbazaar.org.
 
-This creation script has only been tested running on OS X Yosemite.
+This creation script has only been tested running on OS X Yosemite, Windows 10 and Ubuntu 14.04.
 
 ## Linux
 
