@@ -18,11 +18,11 @@ your Linux package manager.
 
 This repository is not to install the software, but to BUILD the installer itself. We will make downloadable installer executables available at https://openbazaar.org.
 
-This creation script has been tested running on OS X Yosemite, Win32, Win64.
+This creation script has only been tested running on OS X Yosemite, Windows 10 and Ubuntu 14.04.
 
 ## Linux
 
-sh make_openbazaar.sh linux
+./make_openbazaar.sh linux
 
 ## Windows
 
@@ -33,4 +33,4 @@ To build the Windows installer on Linux and OSX you can run:
 
 ## OSX
 
-sh make_openbazaar.sh osx
+./make_openbazaar.sh osx
