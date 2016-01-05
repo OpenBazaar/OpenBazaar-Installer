@@ -4,6 +4,7 @@
 ;Include Modern UI
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
+!include x64.nsh
 
 
 !addplugindir "$%AppData%"
@@ -21,7 +22,7 @@ BrandingText "${APP_NAME} ${PT_VERSION}"
 
 CRCCheck on
 SetCompressor /SOLID lzma
-OutFile "OpenBazaar_Setup_win32.exe"
+OutFile "OpenBazaar_Setup_win64.exe"
 
 
 ;Default installation folder
@@ -315,7 +316,7 @@ Section ; App Files
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
     SetOutPath "$INSTDIR"
-    File /r "../temp-win32/OpenBazaar-Client"
+    File /r "../temp-win64/OpenBazaar-Client"
     File /r "../OpenBazaar-Server"
     File /r "OpenBazaar.ps1"
     File /r "icon.ico"
@@ -325,9 +326,9 @@ Section ; App Files
     File /r "requirements.txt"	
 
     SetOutPath "${TEMP_DIR}"
-    File "../temp-win32/python-2.7.11.msi"
-    File "../temp-win32/vcredist.exe"
-    File "../temp-win32/upx.exe"
+    File "../temp-win64/python-2.7.11.msi"
+    File "../temp-win64/vcredist.exe"
+    File "../temp-win64/upx.exe"
 
 SectionEnd
 
@@ -355,31 +356,30 @@ Section ; Install Software
     ${EndIf}
 
     DetailPrint "Adding Python bin to PATH"
-        ExecWait '"setx" PATH "%PATH%;C:\python27;C:\python27\Scripts"'
-        ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
-        ExecWait '"setx" PYTHONHOME "C:\python27"'
+	ExecWait '"setx" PATH "%PATH%;C:\python27;C:\python27\Scripts"'
+	ExecWait '"setx" PYTHONPATH "C:\python27\Lib"'
+	ExecWait '"setx" PYTHONHOME "C:\python27"'
 
     DetailPrint "Adding firewall rule for Python"
-        ExecWait '"netsh" advfirewall firewall add rule name="Python" dir=in action=allow program="C:\python27\python.exe" enable=yes'
-    
-DetailPrint "Installing pynacl"
-	File /r "../temp-win32/PyNaCl-0.3.0-py2.7-win32.egg"
-        Rename "PyNaCl-0.3.0-py2.7-win32.egg\" "C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg\"
-        nsExec::ExecToLog '"C:\python27\Scripts\easy_install.exe" C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win32.egg'
-        DetailPrint "easy_install returned $0"
+    	ExecWait '"netsh" advfirewall firewall add rule name="Python" dir=in action=allow program="C:\python27\python.exe" enable=yes'
+
+    DetailPrint "Installing pynacl"
+	File /r "../temp-win64/PyNaCl-0.3.0-py2.7-win-amd64.egg"
+    	Rename "PyNaCl-0.3.0-py2.7-win-amd64.egg\" "C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg\"
+	nsExec::ExecToLog '"C:\python27\Scripts\easy_install.exe" C:\python27\Lib\site-packages\PyNaCl-0.3.0-py2.7-win-amd64.egg'
+	DetailPrint "easy_install returned $0"
 
 DetailPrint "Installing pyinstaller"
     ExecWait '"C:\python27\Scripts\pip.exe" install https://github.com/pyinstaller/pyinstaller/archive/develop.zip'
 
     DetailPrint "Building OpenBazaar.exe"
     SetOutPath "$INSTDIR"
-    nsExec::ExecToLog '"C:\python27\Scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
+    nsExeC::ExecToLog '"C:\python27\Scripts\pyinstaller" --onefile --windowed "$INSTDIR\systray.py" -i "$INSTDIR\systray.ico"'
     Pop $0
     DetailPrint "pyinstaller returned $0"
 
     Rename "$INSTDIR\dist\systray.exe" "$INSTDIR\OpenBazaar.exe"
     CopyFiles "$INSTDIR\OpenBazaar-Server\ob.cfg" "$INSTDIR\ob.cfg"
-
 
 SectionEnd
 

@@ -18,7 +18,6 @@
 
 var PythonRoot
 var PythonExecutable
-var StrNoUsablePythonFound
 
 Function ValidatePythonVersion
   ClearErrors

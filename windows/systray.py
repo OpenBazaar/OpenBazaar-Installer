@@ -1,4 +1,4 @@
-﻿# !/usr/bin/env python
+﻿#!/usr/bin/env python
 # Module     : SysTrayIcon.py
 # Synopsis   : Windows System tray icon.
 # Programmer : Simon Brunning - simon@brunningonline.net
@@ -228,10 +228,8 @@ if __name__ == '__main__':
     icon = 'systray.ico'
     hover_text = "OpenBazaar"
 
-    server = subprocess.Popen(['pythonw', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
-    install = subprocess.Popen(['npm', 'install'], shell=True, cwd='OpenBazaar-Client')
-    install.wait()
-    client = subprocess.Popen(['npm', 'start'], shell=True, cwd='OpenBazaar-Client')
+    server = subprocess.Popen(['python', 'openbazaard.py', 'start'], shell=True, cwd='OpenBazaar-Server')
+    client = subprocess.Popen('./OpenBazaar-Client/OpenBazaar_Client.exe')
 
     def kill(proc_pid):
         process = psutil.Process(proc_pid)
@@ -244,15 +242,15 @@ if __name__ == '__main__':
 
 
     def start_server(sysTrayIcon):
-        subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'start'])
+        subprocess.Popen(['python', "./OpenBazaar-Server/openbazaard.py", 'start'])
 
 
     def start_server_debug(sysTrayIcon):
-        subprocess.Popen(['python', "./openbazaar-server/openbazaard.py", 'start'])
+        subprocess.Popen(['python', "./OpenBazaar-Server/openbazaard.py", 'start'])
 
 
     def stop_server(sysTrayIcon=None):
-        subprocess.Popen(['pythonw', "./openbazaar-server/openbazaard.py", 'stop'])
+        subprocess.Popen(['python', "./OpenBazaar-Server/openbazaard.py", 'stop'])
 
 
     def switch_icon(sysTrayIcon):
