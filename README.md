@@ -5,11 +5,10 @@ The goal here is to have a 1-step build process.
 
 You need of the follow dependencies:
 
-wine
-
-grunt
-
-nodejs (npm executable) 
+ - wine
+ - nodejs (npm executable) 
+ - grunt
+ - grunt-electron-debian-installer
 
 (optional) upx and ucl to optimize standalone executable
 
@@ -22,7 +21,8 @@ This creation script has only been tested running on OS X Yosemite, Windows 10 a
 
 ## Linux
 
-./make_openbazaar.sh linux
+* ./make_openbazaar.sh linux64 (64-bit)
+* ./make_openbazaar.sh linux32 (32-bit)
 
 ## Windows
 
