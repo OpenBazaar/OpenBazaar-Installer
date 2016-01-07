@@ -25,7 +25,13 @@
   "devDependencies": {
     "electron-installer-dmg": "^0.1.0",
     "electron-packager": "^5.1.0",
+    "electron-windows-installer": "^1.1.0",
     "grunt": "^0.4.5",
-    "grunt-electron-debian-installer": "^0.1.0"
+    "grunt-electron-debian-installer": "^0.1.0",
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.7"
+  },
+  "dependencies": {
+    "electron-builder": "^2.5.0"
   }
 }

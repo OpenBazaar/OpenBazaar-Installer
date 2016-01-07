@@ -81,12 +81,12 @@ If (-Not(Test-Path -Path "$fullDirName\vcredist.exe")){
 Write-Host "Downloading Node JS and Electron..."
 If (-Not(Test-Path -Path "$fullDirName\node.msi")){
   if ($os_type -eq "True") {
-    $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v4.1.1-x64.msi", "$fullDirName\node.msi")
-    $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-x64.zip", "$fullDirName\electron.zip")
+    $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v5.3.0-x64.msi", "$fullDirName\node.msi")
+    $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.36.2/electron-v0.36.2-win32-x64.zip", "$fullDirName\electron.zip")
     $wc.DownloadFile("http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py2.7.exe/download", "$fullDirName\pywin32.exe")
   } else {
-    $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v4.1.1-x86.msi", "$fullDirName\node.msi")
-    $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.33.1/electron-v0.33.1-win32-ia32.zip", "$fullDirName\electron.zip")
+    $wc.DownloadFile("https://nodejs.org/download/release/latest/node-v5.3.0-x86.msi", "$fullDirName\node.msi")
+    $wc.DownloadFile("https://github.com/atom/electron/releases/download/v0.36.2/electron-v0.36.2-win32-ia32.zip", "$fullDirName\electron.zip")
     $wc.DownloadFile("http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download", "$fullDirName\pywin32.exe")
   }
 }

@@ -150,46 +150,42 @@ case $OS in win32*)
 	        cd ..     
 	fi    
 
-        npm install electron-packager
+        rm -rf build/*
 
-        echo 'Compiling node packages'
-        cd OpenBazaar-Client
-        npm install
-        npm install assert-plus
-	
-        echo 'Packaging Electron application'
-        cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
+        echo 'Copying OpenBazaar-Client to build dir...'
+        cp -rf OpenBazaar-Client build/
+
+        echo 'Creating OpenBazaar-Server folder...'
+        mkdir build/OpenBazaar-Server
+
+        echo 'Building Server Binary...'
+        cd OpenBazaar-Server
+        pip install virtualenv
+        virtualenv env
+        env/Scripts/activate.bat
+        pip install -r requirements.txt
+        pip install pyinstaller==3.0
+        pip install ../windows/PyNaCl-0.3.0-py2.70-win32.egg
+        pyinstaller -i ../windows/icon.ico openbazaard.py
+        cp dist/openbazaard/* ../build/OpenBazaar-Server
+        cp ob.cfg ../build/OpenBazaar-Server
         cd ..
 
-        echo 'Rename the folder'
-        mv temp-$OS/OpenBazaar_Client-win32-x64 temp-$OS/OpenBazaar-Client
-	rm -rf temp-$OS/OpenBazaar-Client/OpenBazaar_Client-win32-x64
+        npm install electron-packager electron-builder
+        node_modules/.bin/electron-packager ./build/OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --protocol=ob --platform=win32 --arch=all --icon=windows/icon.ico --version=0.36.1 --out=temp/ --overwrite
 
-        echo 'Downloading installers'
-        cd temp-$OS/
-	
-	if [ ! -f upx${UPXVER}w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -o -j upx.zip
-        fi
+        echo 'Copying server files into application folder(s)...'
+        cp -rf build/OpenBazaar-Server temp/OpenBazaar-win32-x64/resources/
+        cp -rf build/OpenBazaar-Server temp/OpenBazaar-win32-ia32/resources/
 
-        if [ ! -f python-${PYTHONVER}.msi ]; then
-            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.amd64.msi -O python-${PYTHONVER}.msi
-        fi
+        # Build x64
+        node_modules/.bin/electron-builder temp/OpenBazaar-win32-x64/ --platform=win --out=temp/OpenBazaar_Setup_x64.exe --config=config.json
+        #cp "OpenBazaar Setup.exe" "OpenBazaar_Setup_x64.exe"
 
-        if [ ! -f vcredist.exe ]; then
-            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe -O vcredist.exe
-        fi
-        if [ ! -f pynacl.zip ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip -o pynacl_win64.zip && rm pynacl_win64.zip
-        fi
+        # Build ia32
+        node_modules/.bin/electron-builder temp/OpenBazaar-win32-ia32/ --platform=win --out=temp/OpenBazaar_Setup_ia32.exe --config=config.json
+        #cp "OpenBazaar Setup.exe" "OpenBazaar_Setup_ia32.exe"
 
-        cd ..
-
-        makensis windows/ob64.nsi
-	mkdir build-$OS
-	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
         ;;
 
     osx*)
