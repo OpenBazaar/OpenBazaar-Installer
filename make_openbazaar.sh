@@ -273,7 +273,7 @@ case $OS in win32*)
 
 	echo 'Packaging Electron application'
         cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux32 --arch=all --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
 
          cd ..
         # Set up build directories
@@ -320,7 +320,7 @@ case $OS in win32*)
 
 	echo 'Packaging Electron application'
         cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux64 --arch=all --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
 
          cd ..
         # Set up build directories
