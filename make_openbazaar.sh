@@ -78,62 +78,61 @@ fi
 mkdir -p temp-$OS
 mkdir -p build-$OS/OpenBazaar-Server
 
-command_exists grunt
+#command_exists grunt
 command_exists npm
-command_exists wine
+#command_exists wine
+
+# Notes about windows: In windows we want to compile the application for both
+# 32 bit and 64 bit versions even if the host operating system is 64 bit.
+# To make it possible to run either 32 bit and 64 bit versions of python 
+# we need to install Python 2.7 32 bit, Python 2.7 64 bit and afterwards
+# we need to install latest Python 3 in either 32 or 64 bits. This is needed
+# becuase starting with Python 3.3 a launcher is installed that allows us
+# to run any python version that is already installed
+# by calling either `py.exe -2.7-x64 ` or `py.exe -2.7-32`
 
 # Download OS specific installer files to package
 case $OS in win32*)
     export OB_OS=win32
 
+    command_exists py
 
 
         ;;
     win64*)
         export OB_OS=win64
 
-	branch=noupnp
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
-
-        rm -rf build/*
-
-        echo 'Copying OpenBazaar-Client to build dir...'
-        cp -rf OpenBazaar-Client build/
+        command_exists py
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
-        pip install virtualenv
-        virtualenv env
-        env/Scripts/activate.bat
-        pip install -r requirements.txt
+        py.exe -2.7-x64 -m pip install virtualenv
+        py.exe -2.7-x64 -m virtualenv env
+        source env/scripts/activate
         pip install pyinstaller==3.0
-        pip install ../windows/PyNaCl-0.3.0-py2.70-win32.egg
-        pyinstaller -i ../windows/icon.ico openbazaard.py
-        cp dist/openbazaard/* ../build/OpenBazaar-Server
-        cp ob.cfg ../build/OpenBazaar-Server
+        pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
+        pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
+        pip install -r requirements.txt
+        pyinstaller -i ../windows/icon.ico openbazaard.py --noconfirm
+        cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
 
+        echo 'Installing Node modules'
         npm install electron-packager electron-builder
-        node_modules/.bin/electron-packager ./build/OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --protocol=ob --platform=win32 --arch=all --icon=windows/icon.ico --version=0.36.1 --out=temp/ --overwrite
+        cd OpenBazaar-Client
+        npm install
+
+        echo 'Building Client Binary...'
+        cd ../temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --protocol=ob --platform=win32 --arch=x64 --icon=../windows/icon.ico --version=${ELECTRONVER} --overwrite
+        cd ..
 
         echo 'Copying server files into application folder(s)...'
-        cp -rf build/OpenBazaar-Server temp/OpenBazaar-win32-x64/resources/
-        cp -rf build/OpenBazaar-Server temp/OpenBazaar-win32-ia32/resources/
+        cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-x64/resources/
 
-        # Build x64
-        node_modules/.bin/electron-builder temp/OpenBazaar-win32-x64/ --platform=win --out=temp/OpenBazaar_Setup_x64.exe --config=config.json
-        #cp "OpenBazaar Setup.exe" "OpenBazaar_Setup_x64.exe"
-
-        # Build ia32
-        node_modules/.bin/electron-builder temp/OpenBazaar-win32-ia32/ --platform=win --out=temp/OpenBazaar_Setup_ia32.exe --config=config.json
-        #cp "OpenBazaar Setup.exe" "OpenBazaar_Setup_ia32.exe"
+        echo 'Building Installer...'
+        node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
 
         ;;
 
