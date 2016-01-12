@@ -84,59 +84,9 @@ command_exists wine
 
 # Download OS specific installer files to package
 case $OS in win32*)
-        export OB_OS=win32
+    export OB_OS=win32
 
-	branch=noupnp
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd .. 
-	fi    
-	
-        npm install electron-packager
 
-        echo 'Compiling node packages'
-        cd OpenBazaar-Client
-        npm install
-	npm install assert-plus
-
-        echo 'Packaging Electron application'
-        cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
-        cd ..
-
-        echo 'Rename the folder'
-        mv temp-$OS/OpenBazaar_Client-win32-ia32 temp-$OS/OpenBazaar-Client
-	rm -rf temp-$OS/OpenBazaar-Client/OpenBazaar_Client-win32-ia32
-
-        echo 'Downloading installers'
-
-        cd temp-$OS
-	
-	if [ ! -f upx${UPXVER}w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -o -j upx.zip
-        fi
-
-        if [ ! -f python-${PYTHONVER}.msi ]; then
-            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.msi -O python-${PYTHONVER}.msi
-        fi
-
-        if [ ! -f vcredist.exe ]; then
-            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
-        fi
-
-        if [ ! -f pynacl ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip -o pynacl_win32.zip && rm pynacl_win32.zip
-        fi
-
-        cd ..
-
-        makensis windows/ob.nsi
-	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
 
         ;;
     win64*)
