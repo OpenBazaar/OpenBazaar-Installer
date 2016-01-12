@@ -1,3 +1,5 @@
+[![Slack Status](https://openbazaar-slackin-drwasho.herokuapp.com/badge.svg)](https://openbazaar-slackin-drwasho.herokuapp.com)
+
 # OpenBazaar-Installer
 
 In this repository we'll have the scripts necessary to create binary distributions for different operating systems.
