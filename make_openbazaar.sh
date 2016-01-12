@@ -55,11 +55,28 @@ else
 
 fi     
 
+branch=master
+if ! [ -d OpenBazaar-Server ]; then
+    echo "Cloning OpenBazaar-Server"
+    clone_command 
+else
+    cd OpenBazaar-Server
+    git pull
+    cd ..
+fi
+
 if [ -z "${dir}" ]; then
     dir="."
 fi
 cd ${dir}
 echo "Switched to ${PWD}"
+
+if [ -d build-$OS ]; then
+    rm -rf build-$OS
+fi
+
+mkdir -p temp-$OS
+mkdir -p build-$OS/OpenBazaar-Server
 
 command_exists grunt
 command_exists npm
@@ -68,13 +85,6 @@ command_exists wine
 # Download OS specific installer files to package
 case $OS in win32*)
         export OB_OS=win32
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
 
 	branch=noupnp
 	if ! [ -d OpenBazaar-Server ]; then
@@ -126,19 +136,11 @@ case $OS in win32*)
         cd ..
 
         makensis windows/ob.nsi
-	mkdir build-$OS
 	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
 
         ;;
     win64*)
         export OB_OS=win64
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
 
 	branch=noupnp
 	if ! [ -d OpenBazaar-Server ]; then
@@ -154,9 +156,6 @@ case $OS in win32*)
 
         echo 'Copying OpenBazaar-Client to build dir...'
         cp -rf OpenBazaar-Client build/
-
-        echo 'Creating OpenBazaar-Server folder...'
-        mkdir build/OpenBazaar-Server
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
@@ -191,23 +190,7 @@ case $OS in win32*)
     osx*)
 
         echo 'Building OS X binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-	
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
 
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
 	npm install electron-packager
 	npm install electron-installer-dmg
 
@@ -224,9 +207,6 @@ case $OS in win32*)
 	echo 'Rename the folder'
         mv temp-$OS/OpenBazaar_Client-darwin-x64 build-$OS/
 	rm -rf build-$OS//OpenBazaar_Client-darwin-x64   
-    
-	# Set up build directories
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
@@ -243,23 +223,6 @@ case $OS in win32*)
     linux32*)
 
         echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
-
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
    
 	npm install electron-packager
 
@@ -274,7 +237,6 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
@@ -290,23 +252,6 @@ case $OS in win32*)
     linux64*)
 
         echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
-
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
    
 	npm install electron-packager
 
@@ -321,7 +266,6 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
