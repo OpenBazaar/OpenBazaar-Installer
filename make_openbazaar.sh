@@ -106,10 +106,10 @@ case $OS in win32*)
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
-        #pip install virtualenv
-        #virtualenv env
-        #env/scripts/activate.bat
-        #pip install pyinstaller==3.1
+        pip install virtualenv
+        virtualenv env
+        env/scripts/activate.bat
+        pip install pyinstaller==3.1
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
         pip install -r requirements.txt
