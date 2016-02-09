@@ -113,7 +113,7 @@ case $OS in win32*)
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
         pip install -r requirements.txt
-        pyinstaller -F --onefile -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
+        pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
