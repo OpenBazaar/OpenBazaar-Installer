@@ -102,38 +102,43 @@ case $OS in win32*)
     win64*)
         export OB_OS=win64
 
-        command_exists py
+        command_exists python
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
-        py.exe -2.7-x64 -m pip install virtualenv
-        py.exe -2.7-x64 -m virtualenv env
-        source env/scripts/activate
-        pip install pyinstaller==3.0
+        #pip install virtualenv
+        #virtualenv env
+        #env/scripts/activate.bat
+        #pip install pyinstaller==3.1
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
         pip install -r requirements.txt
-        pyinstaller -i ../windows/icon.ico openbazaard.py --noconfirm
+        pyinstaller -F --onefile -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
 
         echo 'Installing Node modules'
-        npm install electron-packager electron-builder
+        #npm install electron-packager electron-builder
         cd OpenBazaar-Client
-        npm install
+        #npm install
 
         echo 'Building Client Binary...'
         cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --protocol=ob --platform=win32 --arch=x64 --icon=../windows/icon.ico --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --version-string.ProductName=OpenBazaar --protocol=ob --platform=win32 --arch=x64 --icon=../windows/icon.ico --version=${ELECTRONVER} --overwrite
         cd ..
 
         echo 'Copying server files into application folder(s)...'
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-x64/resources/
 
         echo 'Building Installer...'
-        node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
 
+        #node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
+
+        #npm install -g grunt
+        #npm install --save-dev grunt-electron-installer
+
+        grunt create-windows-installer
         ;;
 
     osx*)
