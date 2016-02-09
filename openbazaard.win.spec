@@ -14,11 +14,11 @@ a = Analysis(['OpenBazaar-Server\\openbazaard.py'],
              win_no_prefer_redirects=None,
              win_private_assemblies=None,
              cipher=block_cipher)
-a.binaries += [('ssleay32.dll', 'C:\\Users\\brian\\Documents\\Projects\\OpenBazaar-Installer\\windows\\ssleay32.dll', 'BINARY'),
-('libeay32.dll', 'C:\\Users\\brian\\Documents\\Projects\\OpenBazaar-Installer\\windows\\libeay32.dll', 'BINARY')]
+a.binaries += [('ssleay32.dll', '\\windows\\ssleay32.dll', 'BINARY'),
+('libeay32.dll', '\\windows\\libeay32.dll', 'BINARY')]
 a.datas += [
 ('ob.cfg', 'ob.cfg', 'DATA'),
-('bitcointools\\english.txt', 'c:\\python27\\bitcointools\\english.txt', 'DATA')
+('bitcointools\\english.txt', 'windows\\english.txt', 'DATA')
 ]
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
