@@ -133,10 +133,11 @@ case $OS in win32*)
 
         echo 'Building Installer...'
 
-        #node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
+        # This method deprecated
+        # node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
 
-        #npm install -g grunt
-        #npm install --save-dev grunt-electron-installer
+        npm install -g grunt
+        npm install --save-dev grunt-electron-installer
 
         grunt create-windows-installer
         ;;
