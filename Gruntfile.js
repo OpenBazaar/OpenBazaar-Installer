@@ -37,7 +37,7 @@ module.exports = function(grunt) {
         owners: 'OpenBazaar',
         exe: 'OpenBazaar.exe',
         description: 'OpenBazaar',
-        version: '1.0.1',
+        version: grunt.option('version') || '',
         title: 'OpenBazaar',
         iconUrl: 'https://openbazaar.org/downloads/icon.ico',
         setupIcon: 'windows\\icon.ico',
