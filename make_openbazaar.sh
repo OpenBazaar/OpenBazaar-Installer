@@ -49,16 +49,15 @@ if ! [ -d OpenBazaar-Client ]; then
 	echo "Cloning OpenBazaar-Client"
 	clone_command_client
 else
-        cd OpenBazaar-Client
-        git pull
-        cd .. 
-
-fi     
+    cd OpenBazaar-Client
+    git pull
+    cd ..
+fi
 
 branch=master
 if ! [ -d OpenBazaar-Server ]; then
     echo "Cloning OpenBazaar-Server"
-    clone_command 
+    clone_command
 else
     cd OpenBazaar-Server
     git pull
@@ -84,7 +83,7 @@ command_exists npm
 
 # Notes about windows: In windows we want to compile the application for both
 # 32 bit and 64 bit versions even if the host operating system is 64 bit.
-# To make it possible to run either 32 bit and 64 bit versions of python 
+# To make it possible to run either 32 bit and 64 bit versions of python
 # we need to install Python 2.7 32 bit, Python 2.7 64 bit and afterwards
 # we need to install latest Python 3 in either 32 or 64 bits. This is needed
 # becuase starting with Python 3.3 a launcher is installed that allows us
@@ -94,11 +93,9 @@ command_exists npm
 # Download OS specific installer files to package
 case $OS in win32*)
     export OB_OS=win32
-
     command_exists py
+    ;;
 
-
-        ;;
     win64*)
         export OB_OS=win64
 
@@ -144,41 +141,86 @@ case $OS in win32*)
 
     osx*)
 
-        echo 'Building OS X binary'
+        echo 'Building OS X binary...'
 
-	npm install electron-packager
-	npm install electron-installer-dmg
+        echo 'Cleaning build directories...'
+        if [ -d build-$OS ]; then
+            rm -rf build-$OS/*
+        fi
 
-        echo 'Compiling node packages'
+        if [ -d temp-$OS ]; then
+            rm -rf temp-$OS/*
+        fi
+
+        echo 'Installing node.js packages for installer...'
+        npm install electron-packager
+        npm install electron-installer-dmg
+
+        echo 'Installing node.js packages for OpenBazaar-Client...'
         cd OpenBazaar-Client
         npm install
+        cd ..
 
-	echo 'Packaging Electron application'
-        cd ../temp-$OS
-	../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=osx/tent.icns --version=${ELECTRONVER} --overwrite
-#        ../node_modules/.bin/electron-installer-dmg ../OpenBazaar-darwin-x64/OpenBazaar.app OpenBazaar --icon ../osx/tent.icns --out=../OpenBazaar-darwin-x64/ --overwrite --background=../osx/finder_background.png --debug
-
-        cd .. 
-	echo 'Rename the folder'
-        mv temp-$OS/OpenBazaar_Client-darwin-x64 build-$OS/
-	rm -rf build-$OS//OpenBazaar_Client-darwin-x64   
-
-        # Build OpenBazaar-Server Binary
+        echo 'Creating virtualenv and building OpenBazaar-Server binary...'
         cd OpenBazaar-Server
         virtualenv env
         source env/bin/activate
-        pip install -r requirements.txt
-        pip install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard openbazaard.mac.spec
-        cp dist/openbazaard ../build-$OS/OpenBazaar-Server
-        cp ob.cfg ../build-$OS/OpenBazaar-Server
+        pip install --ignore-installed -r requirements.txt
+        pip install --ignore-installed pyinstaller==3.1
+        pip install setuptools==19.1
+        env/bin/pyinstaller -F -n openbazaard -i ../osx/tent.icns --osx-bundle-identifier=com.openbazaar.openbazaard ../openbazaard.mac.spec
+        echo 'Completed building OpenBazaar-Server binary...'
+
+        echo 'Code-signing Daemon binaries...'
+        codesign --force --sign $SIGNING_IDENTITY dist/openbazaard
+        codesign --force --sign $SIGNING_IDENTITY ob.cfg
+        cd ..
+
+        echo 'Packaging Electron application...'
+        cd temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --sign=$SIGNING_IDENTITY --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite
+        cd ..
+
+        echo 'Moving .app to build directory...'
+        mv temp-$OS/OpenBazaar-darwin-x64/* build-$OS/
+        rm -rf build-$OS/OpenBazaar-darwin-x64
+
+        echo 'Create OpenBazaar-Server folder inside the .app...'
+        mkdir build-$OS/OpenBazaar.app/Contents/Resources/OpenBazaar-Server
+
+        cd OpenBazaar-Server
+        echo 'Copy binary files to .app folder...'
+        cp dist/openbazaard ../build-$OS/OpenBazaar.app/Contents/Resources/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar.app/Contents/Resources/OpenBazaar-Server
+        cd ..
+
+        echo 'Creating DMG installer from build...'
+        npm i electron-installer-dmg -g
+        electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
 
         ;;
 
     linux32*)
 
         echo 'Building Linux binary'
-   
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
+	branch=master
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..
+	fi
+
 	npm install electron-packager
 
         echo 'Compiling node packages'
@@ -192,6 +234,7 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
+        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
@@ -207,7 +250,24 @@ case $OS in win32*)
     linux64*)
 
         echo 'Building Linux binary'
-   
+	if [ -d build-$OS ]; then
+		rm -rf build-$OS
+	fi
+
+	if ! [ -d temp-$OS ]; then
+		mkdir -p temp-$OS
+	fi
+
+	branch=master
+	if ! [ -d OpenBazaar-Server ]; then
+		echo "Cloning OpenBazaar-Server"
+		clone_command
+	else
+        	cd OpenBazaar-Server
+        	git pull
+	        cd ..
+	fi
+
 	npm install electron-packager
 
         echo 'Compiling node packages'
@@ -221,6 +281,7 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
+        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
