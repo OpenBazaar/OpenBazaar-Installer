@@ -1,0 +1,9 @@
+{
+  "win" : {
+    "title" : "OpenBazaar",
+    "version" : "1.0.1",
+    "icon" : "windows/icon.ico",
+    "publisher": "OpenBazaar",
+    "verbosity": 1
+  }
+}

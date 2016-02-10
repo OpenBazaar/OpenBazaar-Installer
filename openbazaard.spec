@@ -11,10 +11,10 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           name='openbazaard',
-          debug=False,
+          debug=True,
           strip=None,
           upx=True,
-          console=False )
+          console=True )
 app = BUNDLE(exe,
              name='openbazaard.app',
              icon=None)

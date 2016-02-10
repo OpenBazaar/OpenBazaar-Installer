@@ -26,10 +26,29 @@ module.exports = function(grunt) {
         dest: 'temp/'
       }
 
-    }
+    },
+	'create-windows-installer': {
+	  x64: {
+		appDirectory: 'temp-win64\\OpenBazaar-win32-x64',
+		outputDirectory: 'build-win64',
+        name: 'OpenBazaar',
+        productName: 'OpenBazaar',
+		authors: 'OpenBazaar',
+        owners: 'OpenBazaar',
+        exe: 'OpenBazaar.exe',
+        description: 'OpenBazaar',
+        version: '1.0.1',
+        title: 'OpenBazaar',
+        iconUrl: 'https://openbazaar.org/downloads/icon.ico',
+        setupIcon: 'windows\\icon.ico',
+        loadingGif: 'windows\\ebay.gif',
+        noMsi: true
+	  }
+	}
   });
 
   grunt.loadNpmTasks('grunt-electron-debian-installer');
+  grunt.loadNpmTasks('grunt-electron-installer');
 
   // Default task(s).
   grunt.registerTask('default', ['electron-debian-installer']);

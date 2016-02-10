@@ -55,163 +55,97 @@ else
 
 fi     
 
+branch=master
+if ! [ -d OpenBazaar-Server ]; then
+    echo "Cloning OpenBazaar-Server"
+    clone_command 
+else
+    cd OpenBazaar-Server
+    git pull
+    cd ..
+fi
+
 if [ -z "${dir}" ]; then
     dir="."
 fi
 cd ${dir}
 echo "Switched to ${PWD}"
 
-command_exists grunt
+if [ -d build-$OS ]; then
+    rm -rf build-$OS
+fi
+
+mkdir -p temp-$OS
+mkdir -p build-$OS/OpenBazaar-Server
+
+#command_exists grunt
 command_exists npm
-command_exists wine
+#command_exists wine
+
+# Notes about windows: In windows we want to compile the application for both
+# 32 bit and 64 bit versions even if the host operating system is 64 bit.
+# To make it possible to run either 32 bit and 64 bit versions of python 
+# we need to install Python 2.7 32 bit, Python 2.7 64 bit and afterwards
+# we need to install latest Python 3 in either 32 or 64 bits. This is needed
+# becuase starting with Python 3.3 a launcher is installed that allows us
+# to run any python version that is already installed
+# by calling either `py.exe -2.7-x64 ` or `py.exe -2.7-32`
 
 # Download OS specific installer files to package
 case $OS in win32*)
-        export OB_OS=win32
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
+    export OB_OS=win32
 
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
+    command_exists py
 
-	branch=noupnp
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd .. 
-	fi    
-	
-        npm install electron-packager
-
-        echo 'Compiling node packages'
-        cd OpenBazaar-Client
-        npm install
-	npm install assert-plus
-
-        echo 'Packaging Electron application'
-        cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=ia32 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
-        cd ..
-
-        echo 'Rename the folder'
-        mv temp-$OS/OpenBazaar_Client-win32-ia32 temp-$OS/OpenBazaar-Client
-	rm -rf temp-$OS/OpenBazaar-Client/OpenBazaar_Client-win32-ia32
-
-        echo 'Downloading installers'
-
-        cd temp-$OS
-	
-	if [ ! -f upx${UPXVER}w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -o -j upx.zip
-        fi
-
-        if [ ! -f python-${PYTHONVER}.msi ]; then
-            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.msi -O python-${PYTHONVER}.msi
-        fi
-
-        if [ ! -f vcredist.exe ]; then
-            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe -O vcredist.exe
-        fi
-
-        if [ ! -f pynacl ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win32.egg.zip -O pynacl_win32.zip && unzip -o pynacl_win32.zip && rm pynacl_win32.zip
-        fi
-
-        cd ..
-
-        makensis windows/ob.nsi
-	mkdir build-$OS
-	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
 
         ;;
     win64*)
         export OB_OS=win64
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
 
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
+        command_exists python
 
-	branch=noupnp
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
+        echo 'Building Server Binary...'
+        cd OpenBazaar-Server
+        pip install virtualenv
+        virtualenv env
+        env/scripts/activate.bat
+        pip install pyinstaller==3.1
+        pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
+        pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
+        pip install -r requirements.txt
+        pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
+        cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
+        cd ..
 
-        npm install electron-packager
-
-        echo 'Compiling node packages'
+        echo 'Installing Node modules'
+        #npm install electron-packager electron-builder
         cd OpenBazaar-Client
-        npm install
-        npm install assert-plus
-	
-        echo 'Packaging Electron application'
+        #npm install
+
+        echo 'Building Client Binary...'
         cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client/ OpenBazaar_Client --platform=win32 --arch=x64 --version=${ELECTRONVER} --asar --icon=../windows/icon.ico --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --version-string.ProductName=OpenBazaar --protocol=ob --platform=win32 --arch=x64 --icon=../windows/icon.ico --version=${ELECTRONVER} --overwrite
         cd ..
 
-        echo 'Rename the folder'
-        mv temp-$OS/OpenBazaar_Client-win32-x64 temp-$OS/OpenBazaar-Client
-	rm -rf temp-$OS/OpenBazaar-Client/OpenBazaar_Client-win32-x64
+        echo 'Copying server files into application folder(s)...'
+        cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-x64/resources/
 
-        echo 'Downloading installers'
-        cd temp-$OS/
-	
-	if [ ! -f upx${UPXVER}w.zip ]; then
-            wget http://upx.sourceforge.net/download/upx${UPXVER}w.zip -O upx.zip
-	    unzip -o -j upx.zip
-        fi
+        echo 'Building Installer...'
 
-        if [ ! -f python-${PYTHONVER}.msi ]; then
-            wget https://www.python.org/ftp/python/${PYTHONVER}/python-${PYTHONVER}.amd64.msi -O python-${PYTHONVER}.msi
-        fi
+        # This method deprecated
+        # node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
 
-        if [ ! -f vcredist.exe ]; then
-            wget http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe -O vcredist.exe
-        fi
-        if [ ! -f pynacl.zip ]; then
-            wget https://openbazaar.org/downloads/PyNaCl-0.3.0-py2.7-win-amd64.egg.zip -O pynacl_win64.zip && unzip -o pynacl_win64.zip && rm pynacl_win64.zip
-        fi
+        npm install -g grunt
+        npm install --save-dev grunt-electron-installer
 
-        cd ..
-
-        makensis windows/ob64.nsi
-	mkdir build-$OS
-	mv windows/OpenBazaar_Setup_$OS.exe build-$OS
+        grunt create-windows-installer
         ;;
 
     osx*)
 
         echo 'Building OS X binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-	
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
 
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
 	npm install electron-packager
 	npm install electron-installer-dmg
 
@@ -228,9 +162,6 @@ case $OS in win32*)
 	echo 'Rename the folder'
         mv temp-$OS/OpenBazaar_Client-darwin-x64 build-$OS/
 	rm -rf build-$OS//OpenBazaar_Client-darwin-x64   
-    
-	# Set up build directories
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
@@ -247,23 +178,6 @@ case $OS in win32*)
     linux32*)
 
         echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
-
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
    
 	npm install electron-packager
 
@@ -278,7 +192,6 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
@@ -294,23 +207,6 @@ case $OS in win32*)
     linux64*)
 
         echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
-
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
-
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command 
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..     
-	fi    
    
 	npm install electron-packager
 
@@ -325,7 +221,6 @@ case $OS in win32*)
          cd ..
         # Set up build directories
         cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
 
         # Build OpenBazaar-Server Binary
         cd OpenBazaar-Server
