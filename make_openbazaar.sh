@@ -148,6 +148,7 @@ case $OS in win32*)
         grunt create-windows-installer --version=$PACKAGE_VERSION
 
         echo "Do not forget to sign the release before distributing..."
+        echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
         ;;
 
     osx*)
