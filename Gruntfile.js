@@ -29,7 +29,7 @@ module.exports = function(grunt) {
     },
 	'create-windows-installer': {
 	  x64: {
-		appDirectory: 'temp-win64\\OpenBazaar-win32-x64',
+		appDirectory: 'temp-win64/OpenBazaar-win32-x64',
 		outputDirectory: 'build-win64',
         name: 'OpenBazaar',
         productName: 'OpenBazaar',
@@ -40,8 +40,8 @@ module.exports = function(grunt) {
         version: grunt.option('version') || '',
         title: 'OpenBazaar',
         iconUrl: 'https://openbazaar.org/downloads/icon.ico',
-        setupIcon: 'windows\\icon.ico',
-        loadingGif: 'windows\\ebay.gif',
+        setupIcon: 'windows/icon.ico',
+        loadingGif: 'windows/ebay.gif',
         noMsi: true
 	  }
 	}

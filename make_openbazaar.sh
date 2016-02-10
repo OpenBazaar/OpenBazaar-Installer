@@ -85,6 +85,9 @@ fi
 mkdir -p temp-$OS
 mkdir -p build-$OS/OpenBazaar-Server
 
+# Clean past builds in OpenBazaar-Server
+rm -rf OpenBazaar-Server/dist/*
+
 #command_exists grunt
 command_exists npm
 #command_exists wine
@@ -109,6 +112,7 @@ case $OS in win32*)
 
         command_exists python
 
+
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
         pip install virtualenv
@@ -124,9 +128,9 @@ case $OS in win32*)
         cd ..
 
         echo 'Installing Node modules'
-        #npm install electron-packager electron-builder
+        npm install electron-packager
         cd OpenBazaar-Client
-        #npm install
+        npm install
 
         echo 'Building Client Binary...'
         cd ../temp-$OS
@@ -137,9 +141,6 @@ case $OS in win32*)
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-x64/resources/
 
         echo 'Building Installer...'
-
-        # This method deprecated
-        # node_modules/.bin/electron-builder temp-$OS/OpenBazaar-win32-x64/ --platform=win --arch=x64 --out=build-$OS --config=config.json
 
         npm install -g grunt
         npm install --save-dev grunt-electron-installer
@@ -206,11 +207,11 @@ case $OS in win32*)
 
         echo 'Creating DMG installer from build...'
         npm i electron-installer-dmg -g
-        electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
+        electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar-$PACKAGE_VERSION --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
 
         echo 'Codesign the DMG and zip'
         codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar-$PACKAGE_VERSION.dmg
-        zip -r OpenBazaar-mac-PACKAGE_VERSION.zip ./build-osx/OpenBazaar-$PACKAGE_VERSION.dmg
+        zip -r ./build-osx/OpenBazaar-mac-$PACKAGE_VERSION.zip ./build-osx/OpenBazaar-$PACKAGE_VERSION.dmg
 
         ;;
 
