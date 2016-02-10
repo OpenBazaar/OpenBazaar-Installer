@@ -16,8 +16,16 @@ UPXVER=391
 
 OS="${1}"
 
-# Check if user specified repository to pull code from
+# Get Version
+PACKAGE_VERSION=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g' \
+  | tr -d '[[:space:]]')
+echo "OpenBazaar Version: $PACKAGE_VERSION"
 
+# Check if user specified repository to pull code from
 clone_url_server="https://github.com/OpenBazaar/OpenBazaar-Server.git"
 clone_url_client="https://github.com/OpenBazaar/OpenBazaar-Client.git"
 
@@ -136,7 +144,9 @@ case $OS in win32*)
         npm install -g grunt
         npm install --save-dev grunt-electron-installer
 
-        grunt create-windows-installer
+        grunt create-windows-installer --version=$PACKAGE_VERSION
+
+        echo "Do not forget to sign the release before distributing..."
         ;;
 
     osx*)
@@ -172,8 +182,8 @@ case $OS in win32*)
         echo 'Completed building OpenBazaar-Server binary...'
 
         echo 'Code-signing Daemon binaries...'
-        codesign --force --sign $SIGNING_IDENTITY dist/openbazaard
-        codesign --force --sign $SIGNING_IDENTITY ob.cfg
+        codesign --force --sign "$SIGNING_IDENTITY" dist/openbazaard
+        codesign --force --sign "$SIGNING_IDENTITY" ob.cfg
         cd ..
 
         echo 'Packaging Electron application...'
@@ -197,6 +207,10 @@ case $OS in win32*)
         echo 'Creating DMG installer from build...'
         npm i electron-installer-dmg -g
         electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
+
+        echo 'Codesign the DMG and zip'
+        codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar-$PACKAGE_VERSION.dmg
+        zip -r OpenBazaar-mac-PACKAGE_VERSION.zip ./build-osx/OpenBazaar-$PACKAGE_VERSION.dmg
 
         ;;
 
