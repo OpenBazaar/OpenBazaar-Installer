@@ -190,7 +190,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application...'
         cd temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --sign=$SIGNING_IDENTITY --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --app-category-type=public.app-category.business --app-bundle-id=OpenBazaar --sign=$SIGNING_IDENTITY --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite --app-version=$PACKAGE_VERSION
         cd ..
 
         echo 'Moving .app to build directory...'
@@ -208,11 +208,12 @@ case $OS in win32*)
 
         echo 'Creating DMG installer from build...'
         npm i electron-installer-dmg -g
+        codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar.app
         electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar-$PACKAGE_VERSION --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
 
         echo 'Codesign the DMG and zip'
         codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar-$PACKAGE_VERSION.dmg
-        zip -r ./build-osx/OpenBazaar-mac-$PACKAGE_VERSION.zip ./build-osx/OpenBazaar-$PACKAGE_VERSION.dmg
+        zip -r ./build-osx/OpenBazaar-mac-$PACKAGE_VERSION.zip ./build-osx/OpenBazaar.app
 
         ;;
 
