@@ -9,6 +9,7 @@
 ## win32 win64 linux osx
 ##
 
+
 ELECTRONVER=0.36.9
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
@@ -176,7 +177,7 @@ case $OS in win32*)
         echo 'Creating virtualenv and building OpenBazaar-Server binary...'
         cd OpenBazaar-Server
         virtualenv env
-        source env/bin/activate
+        . env/bin/activate
         pip install --ignore-installed -r requirements.txt
         pip install --ignore-installed pyinstaller==3.1
         pip install setuptools==19.1
@@ -305,13 +306,14 @@ case $OS in win32*)
 
         # Build OpenBazaar-Server Binary
         echo "Building OpenBazaar-Server binary"
+
         mkdir build-$OS/OpenBazaar-Server
         cd OpenBazaar-Server
         virtualenv env
         . env/bin/activate
         pip install -r requirements.txt
         pip install pyinstaller==3.1
-        env/bin/pyinstaller -D -F -n openbazaard -c "openbazaard.py"
+        pyinstaller -D -F -n openbazaard ../openbazaard.linux.spec
 
         echo "Copy openbazaard to build folder"
         cp dist/openbazaard ../build-$OS/OpenBazaar-Server
@@ -333,8 +335,9 @@ case $OS in win32*)
             echo "Nothing yet"
         fi
 
-	    npm install -g electron-packager
-	    npm install -g grunt-cli
+	npm install -g electron-packager
+	npm install -g grunt-cli
+        npm install -g grunt-electron-installer --save-dev
         npm install -g grunt-electron-installer-debian --save-dev
 
         grunt
@@ -343,3 +346,4 @@ case $OS in win32*)
 	echo "Build done in build-$OS"
 
 esac
+
