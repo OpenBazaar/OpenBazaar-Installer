@@ -308,7 +308,7 @@ case $OS in win32*)
         mkdir build-$OS/OpenBazaar-Server
         cd OpenBazaar-Server
         virtualenv env
-        source env/bin/activate
+        . env/bin/activate
         pip install -r requirements.txt
         pip install pyinstaller==3.1
         env/bin/pyinstaller -D -F -n openbazaard -c "openbazaard.py"
