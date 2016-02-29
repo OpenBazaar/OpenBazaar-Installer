@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+﻿﻿module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
@@ -6,9 +6,13 @@ module.exports = function(grunt) {
     'electron-installer-debian': {
       options: {
         productName: 'OpenBazaar',
+        name: 'openbazaar',
         arch: 'amd64',
+        version: '1.0.4',
+        bin: 'openbazaar',
+        maintainer: 'OpenBazaar <project@openbazaar.org>',
         rename: function (dest, src) {
-          return dest + '<%= name %>_<%= version %>-<%= revision %>_<%= arch %>.deb';
+          return dest + '<%= name %>_<%= version %>_<%= arch %>.deb';
         },
         productDescription: 'Decentralized Peer to Peer Marketplace for Bitcoin',
         lintianOverrides: [
@@ -19,7 +23,8 @@ module.exports = function(grunt) {
         icon: 'OpenBazaar-Client/imgs/openbazaar-icon.png',
         categories: [
           'Utility'
-        ]
+        ],
+        priority: 'optional'
       },
       'app-with-asar': {
         src: 'temp-linux64/openbazaar-linux-x64/',
