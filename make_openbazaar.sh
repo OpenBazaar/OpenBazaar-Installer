@@ -9,7 +9,7 @@
 ## win32 win64 linux osx
 ##
 
-ELECTRONVER=0.36.2
+ELECTRONVER=0.36.9
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
@@ -190,7 +190,7 @@ case $OS in win32*)
 
         echo 'Packaging Electron application...'
         cd temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --app-category-type=public.app-category.business --app-bundle-id=OpenBazaar --sign=$SIGNING_IDENTITY --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite --app-version=$PACKAGE_VERSION
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --app-category-type=public.app-category.business --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite --app-version=$PACKAGE_VERSION
         cd ..
 
         echo 'Moving .app to build directory...'
@@ -208,12 +208,13 @@ case $OS in win32*)
 
         echo 'Creating DMG installer from build...'
         npm i electron-installer-dmg -g
-        codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar.app
+        codesign --force --deep --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar.app
         electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar-$PACKAGE_VERSION --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
 
         echo 'Codesign the DMG and zip'
         codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar-$PACKAGE_VERSION.dmg
-        zip -r ./build-osx/OpenBazaar-mac-$PACKAGE_VERSION.zip ./build-osx/OpenBazaar.app
+        cd build-$OS
+        zip -r OpenBazaar-mac-$PACKAGE_VERSION.zip OpenBazaar.app
 
         ;;
 
@@ -233,9 +234,9 @@ case $OS in win32*)
 		echo "Cloning OpenBazaar-Server"
 		clone_command
 	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..
+        cd OpenBazaar-Server
+        git pull
+        cd ..
 	fi
 
 	npm install electron-packager
@@ -266,49 +267,79 @@ case $OS in win32*)
 	;;
     linux64*)
 
-        echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
+        echo "Building Linux binary (x64)"
 
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
+        echo "Clean/empty build-$OS"
+        if [ -d build-$OS ]; then
+            rm -rf build-$OS/*
+        else
+            mkdir build-$OS
+        fi
 
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command
-	else
-        	cd OpenBazaar-Server
-        	git pull
-	        cd ..
-	fi
+        echo "Create clean temp-$OS folder if necessary"
+        if ! [ -d temp-$OS ]; then
+            mkdir -p temp-$OS
+        else
+            rm -rf temp-$OS/*
+        fi
 
-	npm install electron-packager
+        echo "Pull code from GitHub"
+        branch=master
+        if ! [ -d OpenBazaar-Server ]; then
+            echo "Cloning OpenBazaar-Server"
+            clone_command
+        else
+            cd OpenBazaar-Server
+            git pull
+            cd ..
+        fi
 
-        echo 'Compiling node packages'
+        echo "Installing npm packages for installer"
+        sudo apt-get install npm python-pip python-virtualenv python-dev libffi-dev
+        npm install electron-packager
+
+        echo "Installing npm packages for the Client"
         cd OpenBazaar-Client
         npm install
-
-	echo 'Packaging Electron application'
-        cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
-
-         cd ..
-        # Set up build directories
-        cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
+        cd ..
 
         # Build OpenBazaar-Server Binary
+        echo "Building OpenBazaar-Server binary"
+        mkdir build-$OS/OpenBazaar-Server
         cd OpenBazaar-Server
-        virtualenv2 env
+        virtualenv env
         source env/bin/activate
-        pip2 install -r requirements.txt
-        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard openbazaard.py
+        pip install -r requirements.txt
+        pip install pyinstaller==3.1
+        env/bin/pyinstaller -D -F -n openbazaard -c "openbazaard.py"
+
+        echo "Copy openbazaard to build folder"
         cp dist/openbazaard ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
+
+	    echo "Packaging Electron application"
+        cd ../temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite --prune
+
+        cd ..
+
+        cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources
+
+        if [ "$(uname)" == "Darwin" ]; then
+            brew install fakeroot dpkg
+        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+            sudo apt-get install fakeroot dpkg
+        elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+            echo "Nothing yet"
+        fi
+
+	    npm install -g electron-packager
+	    npm install -g grunt-cli
+        npm install -g grunt-electron-installer-debian --save-dev
+
+        grunt
+
+
 	echo "Build done in build-$OS"
 
 esac
