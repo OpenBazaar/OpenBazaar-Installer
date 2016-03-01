@@ -35,9 +35,9 @@
       }
     },
 	'create-windows-installer': {
-	  x64: {
-		appDirectory: 'temp-win64/OpenBazaar-win32-x64',
-		outputDirectory: 'build-win64',
+      x32: {
+        appDirectory: grunt.option('appdir'),
+        outputDirectory: grunt.option('outdir'),
         name: 'OpenBazaar',
         productName: 'OpenBazaar',
 		authors: 'OpenBazaar',

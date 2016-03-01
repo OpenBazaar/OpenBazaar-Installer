@@ -104,21 +104,70 @@ command_exists npm
 
 # Download OS specific installer files to package
 case $OS in win32*)
-    export OB_OS=win32
-    command_exists py
-    ;;
+        export OB_OS=win32
+        command_exists py
+
+        echo 'Building Server Binary...'
+        cd OpenBazaar-Server
+        py.exe -2.7-32 -m pip install virtualenv
+        py.exe -2.7-32 -m virtualenv env-$OS
+        source env-$OS/scripts/activate
+        pip install pyinstaller==3.1
+        pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win32.whl
+        pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win32.whl
+        pip install -r requirements.txt
+        pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
+        cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
+        cp ob.cfg ../build-$OS/OpenBazaar-Server
+        cd ..
+
+        echo 'Installing Node modules'
+        npm install electron-packager
+        cd OpenBazaar-Client
+        npm install
+
+        echo 'Building Client Binary...'
+        cd ../temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --asar=true --protocol-name=OpenBazaar --version-string.ProductName=OpenBazaar --protocol=ob --platform=win32 --arch=ia32 --icon=../windows/icon.ico --version=${ELECTRONVER} --overwrite
+        cd ..
+
+        echo 'Copying server files into application folder(s)...'
+        cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-ia32/resources/
+
+        echo 'Copying gpg files into application folder...'
+        mkdir temp-$OS/OpenBazaar-win32-ia32/resources/gpg/
+        cd temp-$OS/OpenBazaar-win32-ia32/resources/gpg/
+        mkdir pub
+        cp '/c/Program files (x86)/gnu/GnuPG/pub/gpg.exe' pub
+        cp '/c/Program files (x86)/gnu/GnuPG/gpg2.exe' .
+        cp '/c/Program files (x86)/gnu/GnuPG/gpgconf.exe' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libadns-1.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libassuan-0.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libgcrypt-20.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libgpg-error-0.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libiconv-2.dll' .
+
+        echo 'Building Installer...'
+
+        npm install -g grunt
+        npm install --save-dev grunt-electron-installer
+
+        grunt create-windows-installer --obversion=$PACKAGE_VERSION --appdir=temp-$OS/OpenBazaar-win32-ia32 --outdir=build-$OS
+
+        echo "Do not forget to sign the release before distributing..."
+        echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
+        ;;
 
     win64*)
         export OB_OS=win64
 
-        command_exists python
-
+        command_exists py
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
-        pip install virtualenv
-        virtualenv env
-        env/scripts/activate.bat
+        py.exe -2.7-x64 -m pip install virtualenv
+        py.exe -2.7-x64 -m virtualenv env-$OS
+        source env-$OS/scripts/activate
         pip install pyinstaller==3.1
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
@@ -141,12 +190,25 @@ case $OS in win32*)
         echo 'Copying server files into application folder(s)...'
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/OpenBazaar-win32-x64/resources/
 
+        echo 'Copying gpg files into application folder...'
+        mkdir temp-$OS/OpenBazaar-win32-x64/resources/gpg/
+        cd temp-$OS/OpenBazaar-win32-x64/resources/gpg/
+        mkdir pub
+        cp '/c/Program files (x86)/gnu/GnuPG/pub/gpg.exe' pub
+        cp '/c/Program files (x86)/gnu/GnuPG/gpg2.exe' .
+        cp '/c/Program files (x86)/gnu/GnuPG/gpgconf.exe' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libadns-1.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libassuan-0.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libgcrypt-20.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libgpg-error-0.dll' .
+        cp '/c/Program files (x86)/gnu/GnuPG/libiconv-2.dll' .
+
         echo 'Building Installer...'
 
         npm install -g grunt
         npm install --save-dev grunt-electron-installer
 
-        grunt create-windows-installer --obversion=$PACKAGE_VERSION
+        grunt create-windows-installer --obversion=$PACKAGE_VERSION --appdir=temp-$OS/OpenBazaar-win32-x64 --outdir=build-$OS
 
         echo "Do not forget to sign the release before distributing..."
         echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
