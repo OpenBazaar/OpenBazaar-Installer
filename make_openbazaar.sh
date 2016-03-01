@@ -342,14 +342,6 @@ case $OS in win32*)
 
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-ia32/resources
 
-        if [ "$(uname)" == "Darwin" ]; then
-            brew install fakeroot dpkg
-        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-            sudo apt-get install fakeroot dpkg
-        elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-            echo "Nothing yet"
-        fi
-
 	    npm install -g electron-packager
 	    #npm install -g grunt-cli
         #npm install -g grunt-electron-installer --save-dev
@@ -420,14 +412,6 @@ case $OS in win32*)
         cd ..
 
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources
-
-        if [ "$(uname)" == "Darwin" ]; then
-            brew install fakeroot dpkg
-        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-            sudo apt-get install fakeroot dpkg
-        elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-            echo "Nothing yet"
-        fi
 
 	    npm install -g electron-packager
 	    #npm install -g grunt-cli
