@@ -110,11 +110,26 @@ case $OS in win32*)
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
         py.exe -2.7-32 -m pip install virtualenv
+		
+		if [ -d env-$OS ]; then
+            rm -rf env-$OS
+        fi
+
+        if [ -d dist ]; then
+            rm -rf dist
+        fi
+		
+		if [ -d build ]; then
+            rm -rf build
+        fi
+		
         py.exe -2.7-32 -m virtualenv env-$OS
-        source env-$OS/scripts/activate
+        . env-$OS/scripts/activate
         pip install pyinstaller==3.1
+		pip install setuptools==19.2 --upgrade
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win32.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win32.whl
+        pip install setuptools==19.2
         pip install -r requirements.txt
         pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
@@ -165,13 +180,33 @@ case $OS in win32*)
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
+		
+		if [ -d env-$OS ]; then
+            rm -rf env-$OS
+        fi
+
+        if [ -d dist ]; then
+            rm -rf dist
+        fi
+		
+		if [ -d build ]; then
+            rm -rf build
+        fi
+		
         py.exe -2.7-x64 -m pip install virtualenv
-        py.exe -2.7-x64 -m virtualenv env-$OS
-        source env-$OS/scripts/activate
+        
+		
+		py.exe -2.7-x64 -m virtualenv env-$OS
+        . env-$OS/scripts/activate
         pip install pyinstaller==3.1
+		pip install setuptools==19.2 --upgrade
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
+        
         pip install -r requirements.txt
+		
+        
+		rm -rf dist build
         pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
