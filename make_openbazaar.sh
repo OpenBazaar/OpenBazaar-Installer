@@ -283,50 +283,82 @@ case $OS in win32*)
 
     linux32*)
 
-        echo 'Building Linux binary'
-	if [ -d build-$OS ]; then
-		rm -rf build-$OS
-	fi
+        echo "Building Linux binary (ia32)"
 
-	if ! [ -d temp-$OS ]; then
-		mkdir -p temp-$OS
-	fi
+        echo "Clean/empty build-$OS"
+        if [ -d build-$OS ]; then
+            rm -rf build-$OS/*
+        else
+            mkdir build-$OS
+        fi
 
-	branch=master
-	if ! [ -d OpenBazaar-Server ]; then
-		echo "Cloning OpenBazaar-Server"
-		clone_command
-	else
-        cd OpenBazaar-Server
-        git pull
-        cd ..
-	fi
+        echo "Create clean temp-$OS folder if necessary"
+        if ! [ -d temp-$OS ]; then
+            mkdir -p temp-$OS
+        else
+            rm -rf temp-$OS/*
+        fi
 
-	npm install electron-packager
+        echo "Pull code from GitHub"
+        branch=master
+        if ! [ -d OpenBazaar-Server ]; then
+            echo "Cloning OpenBazaar-Server"
+            clone_command
+        else
+            cd OpenBazaar-Server
+            git pull
+            cd ..
+        fi
 
-        echo 'Compiling node packages'
+        echo "Installing npm packages for installer"
+        sudo apt-get install npm python-pip python-virtualenv python-dev libffi-dev
+        npm install electron-packager
+
+        echo "Installing npm packages for the Client"
         cd OpenBazaar-Client
         npm install
-
-	echo 'Packaging Electron application'
-        cd ../temp-$OS
-        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite
-
-         cd ..
-        # Set up build directories
-        cp -rf OpenBazaar-Client build-$OS
-        mkdir build-$OS/OpenBazaar-Server
+        cd ..
 
         # Build OpenBazaar-Server Binary
+        echo "Building OpenBazaar-Server binary"
+
+        mkdir build-$OS/OpenBazaar-Server
         cd OpenBazaar-Server
-        virtualenv2 env
-        source env/bin/activate
-        pip2 install -r requirements.txt
-        pip2 install git+https://github.com/pyinstaller/pyinstaller.git
-        env/bin/pyinstaller -F -n openbazaard openbazaard.py
+        virtualenv env
+        . env/bin/activate
+        pip install -r requirements.txt
+        pip install pyinstaller==3.1
+        pyinstaller -D -F -n openbazaard ../openbazaard.linux.spec
+
+        echo "Copy openbazaard to build folder"
         cp dist/openbazaard ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
-	echo "Build done in build-$OS"
+
+	    echo "Packaging Electron application"
+        cd ../temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite --prune
+
+        cd ..
+
+        cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-ia32/resources
+
+        if [ "$(uname)" == "Darwin" ]; then
+            brew install fakeroot dpkg
+        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+            sudo apt-get install fakeroot dpkg
+        elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+            echo "Nothing yet"
+        fi
+
+	    npm install -g electron-packager
+	    #npm install -g grunt-cli
+        #npm install -g grunt-electron-installer --save-dev
+        #npm install -g grunt-electron-installer-debian --save-dev
+        npm install -g electron-installer-debian
+
+        electron-installer-debian --config linux/config_ia32.json
+
+	    echo "Build done in build-$OS"
 	;;
     linux64*)
 
@@ -397,13 +429,13 @@ case $OS in win32*)
             echo "Nothing yet"
         fi
 
-	npm install -g electron-packager
-	npm install -g grunt-cli
-        npm install -g grunt-electron-installer --save-dev
-        npm install -g grunt-electron-installer-debian --save-dev
+	    npm install -g electron-packager
+	    #npm install -g grunt-cli
+        #npm install -g grunt-electron-installer --save-dev
+        #npm install -g grunt-electron-installer-debian --save-dev
+        npm install -g electron-installer-debian
 
-        grunt
-
+        electron-installer-debian --config linux/config_amd64.json
 
 	echo "Build done in build-$OS"
 

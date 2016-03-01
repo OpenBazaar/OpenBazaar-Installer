@@ -1,0 +1,21 @@
+{
+  "productName": "OpenBazaar",
+  "name": "openbazaar",
+  "version": "1.0.4",
+  "bin": "openbazaar",
+  "maintainer": "OpenBazaar <project@openbazaar.org>",
+  "arch": "amd64",
+  "src": "temp-linux64/openbazaar-linux-x64/",
+  "dest": "build-linux64/",
+  "productDescription": "Decentralized Peer to Peer Marketplace for Bitcoin",
+  "intianOverrides": [
+    "changelog-file-missing-in-native-package",
+    "executable-not-elf-or-script",
+    "extra-license-file"
+  ],
+  "icon": "OpenBazaar-Client/imgs/openbazaar-icon.png",
+  "categories": [
+    "Utility"
+  ],
+  "priority": "optional"
+}
