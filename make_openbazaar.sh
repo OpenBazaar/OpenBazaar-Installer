@@ -146,7 +146,7 @@ case $OS in win32*)
         npm install -g grunt
         npm install --save-dev grunt-electron-installer
 
-        grunt create-windows-installer --version=$PACKAGE_VERSION
+        grunt create-windows-installer --obversion=$PACKAGE_VERSION
 
         echo "Do not forget to sign the release before distributing..."
         echo "signtool sign /t http://timestamp.digicert.com /a [filename]"

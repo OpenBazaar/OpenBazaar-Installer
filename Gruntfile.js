@@ -44,11 +44,11 @@
         owners: 'OpenBazaar',
         exe: 'OpenBazaar.exe',
         description: 'OpenBazaar',
-        version: grunt.option('version') || '',
+        version: grunt.option('obversion') || '',
         title: 'OpenBazaar',
         iconUrl: 'https://openbazaar.org/downloads/icon.ico',
         setupIcon: 'windows/icon.ico',
-        loadingGif: 'windows/ebay.gif',
+        loadingGif: 'windows/loading.gif',
         noMsi: true
 	  }
 	}
