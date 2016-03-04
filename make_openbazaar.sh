@@ -275,6 +275,7 @@ case $OS in win32*)
         cd OpenBazaar-Server
         virtualenv env
         . env/bin/activate
+        pip install --upgrade pip
         pip install --ignore-installed -r requirements.txt
         pip install --ignore-installed pyinstaller==3.1
         pip install setuptools==19.1
