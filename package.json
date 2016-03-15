@@ -1,7 +1,7 @@
 {
   "name": "openbazaar",
   "productName": "OpenBazaar",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "Decentralized Peer to Peer Marketplace for Bitcoin",
   "main": "Gruntfile.js",
   "scripts": {
