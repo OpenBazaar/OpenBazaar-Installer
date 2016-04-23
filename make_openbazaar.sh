@@ -10,7 +10,7 @@
 ##
 
 
-ELECTRONVER=0.37.5
+ELECTRONVER=0.37.7
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
@@ -348,7 +348,7 @@ case $OS in win32*)
 
         echo "Installing npm packages for installer"
         sudo apt-get install npm python-pip python-virtualenv python-dev libffi-dev
-        npm install electron-packager
+        npm install electron-packager@6.0.2
 
         echo "Installing npm packages for the Client"
         cd OpenBazaar-Client
@@ -364,6 +364,7 @@ case $OS in win32*)
         . env/bin/activate
         pip install -r requirements.txt
         pip install pyinstaller==3.1
+        pip install cryptography
         pyinstaller -D -F -n openbazaard ../openbazaard.linux.spec
 
         echo "Copy openbazaard to build folder"
@@ -378,11 +379,11 @@ case $OS in win32*)
 
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-ia32/resources
 
-	    npm install -g electron-packager
+	    sudo npm install -g electron-packager@6.0.2
 	    #npm install -g grunt-cli
         #npm install -g grunt-electron-installer --save-dev
         #npm install -g grunt-electron-installer-debian --save-dev
-        npm install -g electron-installer-debian
+        sudo npm install -g electron-installer-debian@0.1.1
 
         electron-installer-debian --config linux/config_ia32.json
 
@@ -435,6 +436,7 @@ case $OS in win32*)
         . env/bin/activate
         pip install -r requirements.txt
         pip install pyinstaller==3.1
+        pip install cryptography
         pyinstaller -D -F -n openbazaard ../openbazaard.linux.spec
 
         echo "Copy openbazaard to build folder"
@@ -449,11 +451,11 @@ case $OS in win32*)
 
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources
 
-	    npm install -g electron-packager
+	    sudo npm install -g electron-packager@6.0.2
 	    #npm install -g grunt-cli
         #npm install -g grunt-electron-installer --save-dev
         #npm install -g grunt-electron-installer-debian --save-dev
-        npm install -g electron-installer-debian
+        sudo npm install -g electron-installer-debian@0.1.1
 
         electron-installer-debian --config linux/config_amd64.json
 
