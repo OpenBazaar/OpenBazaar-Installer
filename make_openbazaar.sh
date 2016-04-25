@@ -131,7 +131,7 @@ case $OS in win32*)
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win32.whl
         pip install setuptools==19.2
         pip install -r requirements.txt
-        pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
+        pyinstaller  -i ../windows/icon.ico ../openbazaard.win32.spec --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
@@ -194,11 +194,10 @@ case $OS in win32*)
         fi
 		
         py.exe -2.7-x64 -m pip install virtualenv
-        
-		
+      
 		py.exe -2.7-x64 -m virtualenv env-$OS
         . env-$OS/scripts/activate
-        pip install pyinstaller==3.1
+        pip install pyinstaller==3.1.1
 		pip install setuptools==19.2 --upgrade
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
