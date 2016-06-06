@@ -10,7 +10,7 @@
 ##
 
 
-ELECTRONVER=0.37.8
+ELECTRONVER=1.4.4
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
@@ -304,10 +304,12 @@ case $OS in win32*)
         echo 'Packaging Electron application...'
         cd temp-$OS
         ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaar --app-category-type=public.app-category.business --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite --app-version=$PACKAGE_VERSION
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client OpenBazaarClient --app-category-type=public.app-category.business --protocol-name=OpenBazaar --protocol=ob --platform=darwin --arch=x64 --icon=../osx/tent.icns --version=${ELECTRONVER} --overwrite --app-version=$PACKAGE_VERSION
         cd ..
 
         echo 'Moving .app to build directory...'
         mv temp-$OS/OpenBazaar-darwin-x64/* build-$OS/
+        mv temp-$OS/OpenBazaarClient-darwin-x64/* build-$OS/
         rm -rf build-$OS/OpenBazaar-darwin-x64
 
         echo 'Create OpenBazaar-Server folder inside the .app...'
@@ -323,11 +325,16 @@ case $OS in win32*)
         npm i electron-installer-dmg -g
         codesign --force --deep --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar.app
         electron-installer-dmg ./build-$OS/OpenBazaar.app OpenBazaar-$PACKAGE_VERSION --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
+        codesign --force --deep --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaarClient.app
+        electron-installer-dmg ./build-$OS/OpenBazaarClient.app OpenBazaarClient-$PACKAGE_VERSION --icon ./osx/tent.icns --out=./build-$OS --overwrite --background=./osx/finder_background.png --debug
+
 
         echo 'Codesign the DMG and zip'
         codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaar-$PACKAGE_VERSION.dmg
+        codesign --force --sign "$SIGNING_IDENTITY" ./build-$OS/OpenBazaarClient-$PACKAGE_VERSION.dmg
         cd build-$OS
         zip -r OpenBazaar-mac-$PACKAGE_VERSION.zip OpenBazaar.app
+        zip -r OpenBazaarClient-mac-$PACKAGE_VERSION.zip OpenBazaarClient.app
 
         ;;
 
