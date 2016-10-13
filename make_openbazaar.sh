@@ -10,7 +10,7 @@
 ##
 
 
-ELECTRONVER=0.37.7
+ELECTRONVER=0.37.6
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
@@ -125,13 +125,14 @@ case $OS in win32*)
 		
         py.exe -2.7-32 -m virtualenv env-$OS
         . env-$OS/scripts/activate
-        pip install pyinstaller==3.1
+        pip install pyinstaller==3.1.1
 		pip install setuptools==19.2 --upgrade
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win32.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win32.whl
         pip install setuptools==19.2
         pip install -r requirements.txt
-        pyinstaller  -i ../windows/icon.ico ../openbazaard.win32.spec --noconfirm
+        pyinstaller --clean
+        pyinstaller --clean -i ../windows/icon.ico ../openbazaard.win32.spec --win-private-assemblies --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
@@ -167,7 +168,17 @@ case $OS in win32*)
         npm install -g grunt
         npm install --save-dev grunt-electron-installer
 
+        # Build full version
         grunt create-windows-installer --obversion=$PACKAGE_VERSION --appdir=temp-$OS/OpenBazaar-win32-ia32 --outdir=build-$OS
+
+        # Build client-only version
+        rm -rf build-$OS/OpenBazaar-Server
+        grunt create-windows-installer --obversion=$PACKAGE_VERSION --clientonly=Client --appdir=temp-$OS/OpenBazaar-win32-ia32 --outdir=build-$OS
+
+	cd ../../../../
+        mv build-$OS/OpenBazaarSetup.exe build-$OS/OpenBazaar-${PACKAGE_VERSION}_Setup_i386.exe
+	mv build-$OS/RELEASES build-$OS/RELEASES_WIN32
+	mv "build-$OS/OpenBazaar-$PACKAGE_VERSION-full.nupkg" "build-$OS/OpenBazaar-$PACKAGE_VERSION-i386-full.nupkg"
 
         echo "Do not forget to sign the release before distributing..."
         echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
@@ -206,7 +217,8 @@ case $OS in win32*)
 		
         
 		rm -rf dist build
-        pyinstaller  -i ../windows/icon.ico ../openbazaard.win.spec --noconfirm
+        
+        pyinstaller --clean -i ../windows/icon.ico ../openbazaard.win.spec --win-private-assemblies --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
         cd ..
@@ -244,6 +256,9 @@ case $OS in win32*)
 
         grunt create-windows-installer --obversion=$PACKAGE_VERSION --appdir=temp-$OS/OpenBazaar-win32-x64 --outdir=build-$OS
 
+	cd ../../../../
+	mv build-$OS/OpenBazaarSetup.exe "build-$OS/OpenBazaar-${PACKAGE_VERSION}_Setup_x64.exe"
+	
         echo "Do not forget to sign the release before distributing..."
         echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
         ;;
