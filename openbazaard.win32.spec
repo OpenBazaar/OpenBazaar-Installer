@@ -12,7 +12,7 @@ a = Analysis(['OpenBazaar-Server\\openbazaard.py'],
              runtime_hooks=None,
              excludes=None,
              win_no_prefer_redirects=None,
-             win_private_assemblies=None,
+             win_private_assemblies=True,
              cipher=block_cipher)
 a.binaries += [('ssleay32.dll', '..\\windows\\win32\\ssleay32.dll', 'BINARY'),
 ('libeay32.dll', '..\\windows\\win32\\libeay32.dll', 'BINARY')]
