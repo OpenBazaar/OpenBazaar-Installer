@@ -1,7 +1,7 @@
 {
   "productName": "OpenBazaar",
-  "name": "openbazaar",
-  "bin": "openbazaar",
+  "name": "openbazaar-client",
+  "bin": "openbazaar-client",
   "maintainer": "OpenBazaar <project@openbazaar.org>",
   "arch": "amd64",
   "src": "temp-linux64/openbazaar-linux-x64/",

@@ -8,11 +8,11 @@ module.exports = function(grunt) {
         productName: 'OpenBazaar',
         name: 'openbazaar',
         arch: 'amd64',
-        version: '1.0.4',
+        version: '1.1.8',
         bin: 'openbazaar',
         maintainer: 'OpenBazaar <project@openbazaar.org>',
         rename: function (dest, src) {
-          return dest + '<%= name %>_<%= version %>_<%= arch %>.deb';
+          return dest + '<%= name %><%= clientonly %>_<%= version %>_<%= arch %>.deb';
         },
         productDescription: 'Decentralized Peer to Peer Marketplace for Bitcoin',
         lintianOverrides: [
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
         src: 'temp-linux64/openbazaar-linux-x64/',
         dest: 'build-linux64/',
         rename: function (dest) {
-          return path.join(dest, '<%= name %>_<%= arch %>.deb')
+          return path.join(dest, '<%= name %><%= clientonly %>_<%= arch %>.deb')
         }
       }
     },

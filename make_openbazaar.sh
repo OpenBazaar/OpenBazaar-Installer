@@ -457,21 +457,23 @@ case $OS in win32*)
         cp dist/openbazaard ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
 
-	    echo "Packaging Electron application"
+	echo "Packaging Electron application"
         cd ../temp-$OS
         ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaar --platform=linux --arch=all --version=${ELECTRONVER} --overwrite --prune
-
         cd ..
 
+	# Copy server daemon and cfg into resources folder
         cp -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources
 
-	    sudo npm install -g electron-packager@6.0.2
-	    #npm install -g grunt-cli
-        #npm install -g grunt-electron-installer --save-dev
-        #npm install -g grunt-electron-installer-debian --save-dev
+	sudo npm install -g electron-packager@6.0.2
         sudo npm install -g electron-installer-debian@0.1.1
 
         electron-installer-debian --config linux/config_amd64.json
+
+	# Client only install
+	rm -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources/OpenBazaar-Server
+	electron-installer-debian --clientonly=Client --config linux/config_amd64.client.json
+
 
 	echo "Build done in build-$OS"
 
