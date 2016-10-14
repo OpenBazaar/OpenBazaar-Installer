@@ -37,7 +37,7 @@ module.exports = function(grunt) {
         appDirectory: grunt.option('appdir'),
         outputDirectory: grunt.option('outdir'),
         name: 'OpenBazaar'+(grunt.option('clientonly') || ''),
-        productName: 'OpenBazaar'+grunt.option('clientonly'),
+        productName: 'OpenBazaar'+(grunt.option('clientonly') || ''),
 		authors: 'OpenBazaar',
         owners: 'OpenBazaar',
         exe: 'OpenBazaar.exe',
