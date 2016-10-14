@@ -138,7 +138,7 @@ case $OS in win32*)
         cd ..
 
         echo 'Installing Node modules'
-        npm install electron-packager
+        npm install electron-packager@6.0.2
         cd OpenBazaar-Client
         npm install
 
@@ -224,7 +224,7 @@ case $OS in win32*)
         cd ..
 
         echo 'Installing Node modules'
-        npm install electron-packager
+        npm install electron-packager@6.0.2
         cd OpenBazaar-Client
         npm install
 
@@ -434,7 +434,7 @@ case $OS in win32*)
 
         echo "Installing npm packages for installer"
         sudo apt-get install npm python-pip python-virtualenv python-dev libffi-dev
-        npm install electron-packager
+        npm install electron-packager@6.0.2
 
         echo "Installing npm packages for the Client"
         cd OpenBazaar-Client
