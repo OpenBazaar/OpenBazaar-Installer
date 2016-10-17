@@ -1,10 +1,10 @@
 {
   "productName": "OpenBazaar",
-  "name": "openbazaar",
-  "bin": "openbazaar",
+  "name": "openbazaarclient",
+  "bin": "openbazaarclient",
   "maintainer": "OpenBazaar <project@openbazaar.org>",
   "arch": "amd64",
-  "src": "temp-linux64/openbazaar-linux-x64/",
+  "src": "temp-linux64/openbazaarclient-linux-x64/",
   "dest": "build-linux64/",
   "productDescription": "Decentralized Peer to Peer Marketplace for Bitcoin",
   "intianOverrides": [

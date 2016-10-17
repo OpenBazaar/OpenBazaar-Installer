@@ -471,7 +471,10 @@ case $OS in win32*)
         electron-installer-debian --config linux/config_amd64.json
 
 	# Client only install
-	rm -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaar-linux-x64/resources/OpenBazaar-Server
+        cd temp-$OS
+        ../node_modules/.bin/electron-packager ../OpenBazaar-Client openbazaarclient --platform=linux --arch=all --version=${ELECTRONVER} --overwrite --prune
+	cd ..
+        rm -rf build-$OS/OpenBazaar-Server temp-$OS/openbazaarclient-linux-x64/resources/OpenBazaar-Server
 	electron-installer-debian --clientonly=Client --config linux/config_amd64.client.json
 
 

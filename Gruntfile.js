@@ -6,10 +6,8 @@ module.exports = function(grunt) {
     'electron-installer-debian': {
       options: {
         productName: 'OpenBazaar',
-        name: 'openbazaar',
         arch: 'amd64',
         version: '1.1.8',
-        bin: 'openbazaar',
         maintainer: 'OpenBazaar <project@openbazaar.org>',
         rename: function (dest, src) {
           return dest + '<%= name %><%= clientonly %>_<%= version %>_<%= arch %>.deb';
