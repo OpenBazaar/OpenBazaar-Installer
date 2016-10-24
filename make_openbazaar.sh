@@ -4,13 +4,13 @@
 ##
 ## Usage
 ## ./make_openbazaar.sh OS
-##	
+##
 ## OS supported:
 ## win32 win64 linux osx
 ##
 
 
-ELECTRONVER=0.37.6
+ELECTRONVER=0.37.8
 NODEJSVER=5.1.1
 PYTHONVER=2.7.11
 UPXVER=391
@@ -110,7 +110,7 @@ case $OS in win32*)
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
         py.exe -2.7-32 -m pip install virtualenv
-		
+
 		if [ -d env-$OS ]; then
             rm -rf env-$OS
         fi
@@ -118,11 +118,11 @@ case $OS in win32*)
         if [ -d dist ]; then
             rm -rf dist
         fi
-		
+
 		if [ -d build ]; then
             rm -rf build
         fi
-		
+
         py.exe -2.7-32 -m virtualenv env-$OS
         . env-$OS/scripts/activate
         pip install pyinstaller==3.1.1
@@ -191,7 +191,7 @@ case $OS in win32*)
 
         echo 'Building Server Binary...'
         cd OpenBazaar-Server
-		
+
 		if [ -d env-$OS ]; then
             rm -rf env-$OS
         fi
@@ -199,25 +199,25 @@ case $OS in win32*)
         if [ -d dist ]; then
             rm -rf dist
         fi
-		
+
 		if [ -d build ]; then
             rm -rf build
         fi
-		
+
         py.exe -2.7-x64 -m pip install virtualenv
-      
+
 		py.exe -2.7-x64 -m virtualenv env-$OS
         . env-$OS/scripts/activate
         pip install pyinstaller==3.1.1
 		pip install setuptools==19.2 --upgrade
         pip install https://openbazaar.org/downloads/miniupnpc-1.9-cp27-none-win_amd64.whl
         pip install https://openbazaar.org/downloads/PyNaCl-0.3.0-cp27-none-win_amd64.whl
-        
+
         pip install -r requirements.txt
-		
-        
+
+
 		rm -rf dist build
-        
+
         pyinstaller --clean -i ../windows/icon.ico ../openbazaard.win.spec --win-private-assemblies --noconfirm
         cp -rf dist/openbazaard/* ../build-$OS/OpenBazaar-Server
         cp ob.cfg ../build-$OS/OpenBazaar-Server
@@ -258,7 +258,7 @@ case $OS in win32*)
 
 	cd ../../../../
 	mv build-$OS/OpenBazaarSetup.exe "build-$OS/OpenBazaar-${PACKAGE_VERSION}_Setup_x64.exe"
-	
+
         echo "Do not forget to sign the release before distributing..."
         echo "signtool sign /t http://timestamp.digicert.com /a [filename]"
         ;;
@@ -488,4 +488,3 @@ case $OS in win32*)
 	echo "Build done in build-$OS"
 
 esac
-
